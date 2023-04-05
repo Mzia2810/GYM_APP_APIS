@@ -1,80 +1,104 @@
-import React, { useState, useEffect } from 'react';
-import { ScrollView, View, ImageBackground} from 'react-native';
-import Styles from '../config/Styles';
-import {map} from 'lodash';
-import Loading from './InnerLoading';
-import {getGoals} from "../config/DataApp";
-import TouchableScale from 'react-native-touchable-scale';
-import { Text, Avatar } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
-import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState, useEffect } from "react";
+import { ScrollView, View, ImageBackground } from "react-native";
+import Styles from "../config/Styles";
+import { map } from "lodash";
+import Loading from "./InnerLoading";
+import { getGoals } from "../config/DataApp";
+import TouchableScale from "react-native-touchable-scale";
+import { Text, Avatar } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
+import { GetAllExercise, MyExercise } from "../apis/ApiHandlers";
+import { log } from "react-native-reanimated";
 
 export default function Goals() {
-
   const [isLoaded, setIsLoaded] = useState(false);
   const [items, setItems] = useState([]);
+  const [data, setData] = useState([]);
+  const [allExerciseData, setAllExerciseData] = useState([]);
+
+  useEffect(() => {
+    MyExercise().then((response) => {
+      setData(response.data.data);
+      setIsLoaded(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    GetAllExercise().then((response) => {
+      // setAllExerciseData(response);
+      // setIsLoaded(true);
+      console.log('This is get  all Exercise api =======>  :',response)
+    });
+  }, []);
 
 
   useEffect(() => {
     getGoals().then((response) => {
-        setItems(response);
-        setIsLoaded(true);
+      setItems(response);
+      setIsLoaded(true);
     });
   }, []);
 
   if (!isLoaded) {
-    return (
-      <Loading/>
-      );
+    return <Loading />;
   }
 
   if (isLoaded) {
     return (
-      <View style={{marginVertical: 10, marginBottom: 20}}>
-      <ScrollView
-          style={{width: '100%'}}
+      <View style={{ marginVertical: 10, marginBottom: 20 }}>
+        <ScrollView
+          style={{ width: "100%" }}
           contentContainerStyle={{ flexGrow: 1, paddingRight: 20 }}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
         >
-        {map(items, (item, index) => (
-        <RenderItem key={index} item={item} />
-
+          {map(data, (item, index) => (
+            // console.log('item ==> : ',item)
+            <RenderItem key={index} item={item} />
           ))}
-      </ScrollView>
+        </ScrollView>
       </View>
-      );
+    );
   }
-
 }
 
 function RenderItem(props) {
+  const navigation = useNavigation();
 
-    const navigation = useNavigation();
-
-    const onChangeScreen = (id, title) => {
-    navigation.navigate('singlegoal', {
-      id: id,
-      title: title
-    });    
+  const onChangeScreen = (_id, title) => {
+    navigation.navigate("singlegoal", {
+      id: _id,
+      title: title,
+    });
   };
 
-    const { item } = props;
-    const { id, title } = item;
+  const { item } = props;
+  const { _id, title } = item;
 
-      return (
+  console.log(item.image);
+
+  return (
     <View style={Styles.card6_view}>
-    <TouchableScale onPress={() => onChangeScreen(id, title)} activeOpacity={1} activeScale={0.98} tension={100} friction={10}>
-
-    <ImageBackground source={{uri: item.image}} style={Styles.card6_background} imageStyle={{borderRadius: 8}}>
+      <TouchableScale
+        onPress={() => onChangeScreen(_id, title)}
+        activeOpacity={1}
+        activeScale={0.98}
+        tension={100}
+        friction={10}
+      >
+        <ImageBackground
+          source={{ uri: `${'https://wb-best-fit.herokuapp.com/image/'}${item?.image}` }}
+          style={Styles.card6_background}
+          imageStyle={{ borderRadius: 8 }}
+        >
           <View style={Styles.card6_gradient}>
-            <Text style={Styles.card6_title} numberOfLines={2}>{item.title}</Text>
+            <Text style={Styles.card6_title} numberOfLines={2}>
+              {item?.title}
+            </Text>
           </View>
-    </ImageBackground>
-
-    </TouchableScale>
-      </View>
-
-      )
-
+        </ImageBackground>
+      </TouchableScale>
+    </View>
+  );
 }

@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, ScrollView, SafeAreaView } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, ScrollView, SafeAreaView ,Text} from 'react-native';
 import Heading from '../components/Heading';
 import LatestWorkouts from '../components/LatestWorkouts';
 import ExercisesLibrary from '../components/ExercisesLibrary';
@@ -19,6 +19,20 @@ export default function Home(props) {
   const onChangeScreen = (screen) => {
     props.navigation.navigate(screen);
 };
+
+// async function getData() {
+//   try {
+//     const response = await fetch('https://wb-best-fit.herokuapp.com/api/bodyPart/getAllBodyParts');
+//     const data = await response.json();
+//     console.log('This is api data =====>  :: ',data);
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
+
+// useEffect(() => {
+//   getData()
+// },[])
 
  return (
   <ScrollView

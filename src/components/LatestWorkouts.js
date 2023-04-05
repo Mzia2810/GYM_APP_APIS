@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, View, ImageBackground} from 'react-native';
 import Styles from '../config/Styles';
-import {map} from 'lodash';
+import {map, set} from 'lodash';
 import Loading from './InnerLoading';
 import { getLatestWorkouts } from "../config/DataApp";
 import TouchableScale from 'react-native-touchable-scale';
@@ -10,17 +10,29 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import LevelRate from './LevelRate';
+import { MyExercise } from '../apis/ApiHandlers';
 
 export default function LatestWorkouts() {
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [items, setItems] = useState([]);
+  // const [data, setData] = useState([]);
+
 
   const navigation = useNavigation();
 
   const onChangeScreen = (id, title) => {
     navigation.navigate('workoutdetails', {id, title});
   };
+
+
+  // useEffect(() =>{
+  //   MyExercise().then((response) => {
+  //     setData(response);
+  //     setIsLoaded(true)
+  //   // console.log('This is my new api =======>  :',response.data)
+  //   })
+  // },[])
 
   useEffect(() => {
     getLatestWorkouts().then((response) => {
