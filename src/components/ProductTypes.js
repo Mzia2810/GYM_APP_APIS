@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View} from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { map } from 'lodash';
 import Loading from './InnerLoading';
 import { getProductTypes } from "../config/DataApp";
@@ -13,57 +13,57 @@ export default function ProductTypes() {
 
   useEffect(() => {
     getProductTypes().then((response) => {
-        setItems(response);
-        setIsLoaded(true);
+      setItems(response);
+      setIsLoaded(true);
     });
   }, []);
 
   if (!isLoaded) {
     return (
-      <Loading/>
-      );
+      <Loading />
+    );
   }
 
   if (isLoaded) {
     return (
-      <View style={{marginVertical: 10}}>
-      <ScrollView
-          style={{width: '100%'}}
+      <View style={{ marginVertical: 10 }}>
+        <ScrollView
+          style={{ width: '100%' }}
           contentContainerStyle={{ flexGrow: 1, paddingRight: 20 }}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
         >
-        {map(items, (item, index) => (
-        <RenderItem key={index} item={item} />
+          {map(items, (item, index) => (
+            <RenderItem key={index} item={item} />
 
           ))}
-      </ScrollView>
+        </ScrollView>
       </View>
-      );
+    );
   }
 
 }
 
 function RenderItem(props) {
 
-    const navigation = useNavigation();
+  const navigation = useNavigation();
 
-    const onChangeScreen = (id, title) => {
+  const onChangeScreen = (id, title) => {
     navigation.navigate('singletype', {
       id: id,
       title: title
-    });    
+    });
   };
 
-    const { item } = props;
-    const { id, title } = item;
+  const { item } = props;
+  const { id, title } = item;
 
-      return (
-          
-    <View style={{marginLeft: 15}}>
-        <Chip icon="tag" mode="outlined" onPress={() => onChangeScreen(id, title)}>{item.title}</Chip>
+  return (
+
+    <View style={{ marginLeft: 15 }}>
+      <Chip icon="tag" mode="outlined" onPress={() => onChangeScreen(id, title)}>{item.title}</Chip>
     </View>
 
-      )
+  )
 
 }

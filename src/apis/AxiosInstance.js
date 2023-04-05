@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Alert } from "react-native";
-
+export const IMAGE_URL = 'https://wb-best-fit.herokuapp.com';
 const AxiosInstance = axios.create({
   baseURL: "https://wb-best-fit.herokuapp.com/api/",
   timeout: 5000,
@@ -33,7 +33,7 @@ AxiosInstance.interceptors.response.use(
     return response;
   },
   function (error) {
-    error?.response?.message && typeof error.response.message ==='string' && Alert.alert(`${error.response.message}`)
+    error?.response?.message && typeof error.response.message === 'string' && Alert.alert(`${error.response.message}`)
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
     return Promise.reject(error);

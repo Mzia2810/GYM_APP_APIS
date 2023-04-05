@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, ImageBackground} from 'react-native';
+import { ScrollView, View, ImageBackground, Image } from 'react-native';
 import Styles from '../config/Styles';
-import {map} from 'lodash';
+import { map } from 'lodash';
 import Loading from './InnerLoading';
 import { getFeaturedProducts } from "../config/DataApp";
 import TouchableScale from 'react-native-touchable-scale';
-import { Text} from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ColorsApp from '../config/ColorsApp';
 import { useNavigation } from '@react-navigation/native';
+import { GetAffliateProduct } from '../apis/ApiHandlers';
+import { IMAGE_URL } from '../apis/AxiosInstance';
 
 export default function FeaturedProducts() {
 
@@ -18,54 +20,57 @@ export default function FeaturedProducts() {
 
   const navigation = useNavigation();
 
-  const onChangeScreen = (id) => {
-    navigation.navigate('productdetails', {id});
+  const onChangeScreen = (item) => {
+    navigation.navigate('productdetails', { item });
   };
 
   useEffect(() => {
-    getFeaturedProducts().then((response) => {
-        setItems(response);
-        setIsLoaded(true);
+    // getFeaturedProducts().then((response) => {
+    //   setItems(response);
+    //   setIsLoaded(true);
+    // });
+    GetAffliateProduct().then((response) => {
+      setItems(response?.data);
+      setIsLoaded(true);
     });
+
   }, []);
 
 
   if (!isLoaded) {
     return (
-      <Loading/>
-      );
+      <Loading />
+    );
   }
 
   if (isLoaded) {
     return (
-      <View style={{marginTop: 20}}>
-      <ScrollView
-          style={{width: '100%'}}
+      <View style={{ marginTop: 20 }}>
+        <ScrollView
+          style={{ width: '100%' }}
           contentContainerStyle={{ flexGrow: 1, paddingRight: 20, /*flexDirection: 'row-reverse'*/ }}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
         >
-        {map(items, (item, i) => (
-    
-    <TouchableScale key={i} activeOpacity={1} onPress={() => onChangeScreen(item.id)} activeScale={0.98} tension={100} friction={10}>
-        <ImageBackground source={{uri: item.image}} style={Styles.card1_background} imageStyle={{borderRadius: 8}}>
-          <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']} style={Styles.card1_gradient}>
+          {map(items?.affliateProducts, (item, i) => (
+            <TouchableScale key={i} activeOpacity={1} onPress={() => onChangeScreen(item)} activeScale={0.98} tension={100} friction={10}>
+              <ImageBackground source={{ uri: `${IMAGE_URL}/${item?.image}` }} style={Styles.card1_background} imageStyle={{ borderRadius: 8 }}>
+                <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']} style={Styles.card1_gradient}>
+                  <View style={Styles.card1_viewicon}>
+                    <Icon name="percent" style={[Styles.card1_icon, { fontSize: 14 }]} />
+                  </View>
 
-            <View style={Styles.card1_viewicon}>
-                <Icon name="percent" style={[Styles.card1_icon, {fontSize:14}]}/>
-            </View>
+                  <Text numberOfLines={2} style={Styles.card1_title}>{item?.title}</Text>
+                  <Text numberOfLines={1} style={[Styles.card1_title, { color: ColorsApp.PRIMARY, marginVertical: 5 }]}>{item?.price}</Text>
 
-            <Text numberOfLines={2} style={Styles.card1_title}>{item.title}</Text>
-            <Text numberOfLines={1} style={[Styles.card1_title, {color: ColorsApp.PRIMARY, marginVertical:5}]}>{item.price}</Text>
-
-          </LinearGradient>
-        </ImageBackground>
-        </TouchableScale>
+                </LinearGradient>
+              </ImageBackground>
+            </TouchableScale>
 
           ))}
-      </ScrollView>
+        </ScrollView>
       </View>
-      );
+    );
   }
 
 }

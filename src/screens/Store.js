@@ -13,36 +13,36 @@ export default function Store(props) {
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
   const Strings = Languages[language].texts;
-  
+
   const onChangeScreen = (screen) => {
     props.navigation.navigate(screen);
   };
 
- return (
+  return (
 
-  <ScrollView
-  showsHorizontalScrollIndicator={false}
-  showsVerticalScrollIndicator={false}
->
-    
-<SafeAreaView>
+    <ScrollView
+      showsHorizontalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
+    >
 
-    <View style={Styles.HomeScreen}>
+      <SafeAreaView>
 
-    <Heading title={Strings.ST69}/>
-    <FeaturedProducts/>
+        <View style={Styles.HomeScreen}>
 
-    <Heading title={Strings.ST71} button={() => onChangeScreen('types')}/>
-    <ProductTypes/>
+          <Heading title={Strings.ST69} />
+          <FeaturedProducts />
 
-    <Heading title={Strings.ST70} button={() => onChangeScreen('products')}/>
-    <LatestProducts/>
+          <Heading title={Strings.ST71} button={() => onChangeScreen('types')} />
+          <ProductTypes />
 
-    </View>
-    </SafeAreaView>
+          <Heading title={Strings.ST70} button={() => onChangeScreen('products')} />
+          <LatestProducts />
+
+        </View>
+      </SafeAreaView>
     </ScrollView>
 
-      );
+  );
 
 }
 
