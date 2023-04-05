@@ -31,7 +31,7 @@ export default function Register(props) {
 
     setLoading(true);
 
-    if(email, password, checked != false) {
+    if(email, password,name, checked != false) {
       const errorHandler = ((e)=>{
           if(e.code == 'auth/email-already-in-use'){
             setLoading(false);
@@ -43,7 +43,7 @@ export default function Register(props) {
           }
 
       })
-      await createUserWithEmailAndPassword(auth, email, password).then(() => {
+      await createUserWithEmailAndPassword(auth, email, password,name).then(() => {
           updateProfile({
               displayName : name ? name : '',
           }).then(()=>{
