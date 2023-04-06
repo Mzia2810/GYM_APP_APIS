@@ -1,22 +1,23 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { Alert } from "react-native";
 
 const AxiosInstance = axios.create({
   baseURL: "https://wb-best-fit.herokuapp.com/api/",
   timeout: 5000,
-  headers: { "X-Custom-Header": "foobar" },
+  headers: { "X-Custom-Header": "foobar" , 'Content-Type': 'application/json'},
 });
 
 //Now handle response
 
 // Add a request interceptor
 AxiosInstance.interceptors.request.use(
-  function (config) {
+ async function (config) {
     // Do something before request is sent
-    // let token = store
-    // if(token){
-    //     config.headers.Authorization=`Bearer ${token}`
-    // }
+    let token =await AsyncStorage.getItem('@token')
+    if(!!token){
+        config.headers.Authorization=`Bearer ${token}`
+    }
     return config;
   },
   function (error) {
