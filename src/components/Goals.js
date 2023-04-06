@@ -17,6 +17,24 @@ export default function Goals() {
   const [data, setData] = useState([]);
   const [allExerciseData, setAllExerciseData] = useState([]);
 
+  const GetAllExercise = async () => {
+    let result = await GetAllExercise();
+
+    if (result?.status >= 200 && result?.status < 300) {
+      //success
+      console.log(result.data);
+    } else {
+      //catch
+      console.log('Error:', result.statusText);
+    }
+  };
+
+
+  useEffect(() => {
+    GetAllExercise()
+  }, []);
+
+
   useEffect(() => {
     MyExercise().then((response) => {
       setData(response.data.data);
@@ -24,13 +42,6 @@ export default function Goals() {
     });
   }, []);
 
-  useEffect(() => {
-    GetAllExercise().then((response) => {
-      // setAllExerciseData(response);
-      // setIsLoaded(true);
-      console.log('This is get  all Exercise api =======>  :',response)
-    });
-  }, []);
 
 
   useEffect(() => {
@@ -76,7 +87,7 @@ function RenderItem(props) {
   const { item } = props;
   const { _id, title } = item;
 
-  console.log(item.image);
+  // console.log(item.image);
 
   return (
     <View style={Styles.card6_view}>
@@ -88,9 +99,12 @@ function RenderItem(props) {
         friction={10}
       >
         <ImageBackground
-          source={{ uri: `${'https://wb-best-fit.herokuapp.com/image/'}${item?.image}` }}
+          source={{
+            uri: `${"https://wb-best-fit.herokuapp.com/"}${item?.image}`,
+          }}
           style={Styles.card6_background}
           imageStyle={{ borderRadius: 8 }}
+          resizeMode="cover" // or "contain"
         >
           <View style={Styles.card6_gradient}>
             <Text style={Styles.card6_title} numberOfLines={2}>

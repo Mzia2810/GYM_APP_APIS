@@ -12,7 +12,10 @@ import Languages from "../languages";
 import LanguageContext from "../languages/LanguageContext";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import usePreferences from "../hooks/usePreferences";
-// import { loginUser } from "../apis/ApiHandlers";
+import { loginUser } from "../apis/ApiHandlers";
+import AxiosInstance from "../apis/AxiosInstance";
+import { LOGIN_URL } from "../apis/ApisEndPoints";
+
 
 const auth = getAuth();
 
@@ -27,21 +30,48 @@ export default function Login(props) {
   const [password, setPassword] = useState("");
 
   console.log(email);
+  console.log(password);
 
   const onChangeScreen = (screen) => {
     props.navigation.navigate(screen);
   };
 
   //dummy
-  // const dummyLogin = async () => {
-  //   let result = await loginUser(email, password);
+  const loginUser = async () => {
+    try {
+      const result = await AxiosInstance.post(`${LOGIN_URL}`, {
+        email,
+        password,
+      });
 
-  //   if (result?.status >= 200 && result?.status < 300) {
-  //     //success
-  //   } else {
-  //     //catch
-  //   }
-  // };
+      console.log('result',result)
+    //   if (result?.status >= 200 && result?.status < 300) {
+    //     // Success
+    //   } 
+    //   else {
+    //     // Handle error
+    //     throw new Error('Login failed');
+    //   }
+    //   console.log('result',result);
+
+    // } catch (error) {
+    //   console.error('Error during login:', error);
+    //   if (error.response) {
+    //     console.log('Response data:', error.response.data);
+    //     console.log('Response status:', error.response.status);
+    //     console.log('Response headers:', error.response.headers);
+    //   }
+      // Handle error
+    }
+    catch (error) {
+         console.error('Error during login:', error);
+      //   if (error.response) {
+      //     console.log('Response data:', error.response.data);
+      //     console.log('Response status:', error.response.status);
+      //     console.log('Response headers:', error.response.headers);
+       }
+    
+  };
   //end
   const login = async () => {
     setLoading(true);
