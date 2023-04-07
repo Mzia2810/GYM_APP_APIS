@@ -13,6 +13,7 @@ import { HTMLStyles } from '../config/HTMLStyles';
 import { HTMLStylesDark } from '../config/HTMLStylesDark';
 import HTMLView from 'react-native-render-html';
 import usePreferences from '../hooks/usePreferences';
+import { GetSpecificDiets, getSpecificDiet } from '../apis/ApiHandlers';
 
 export default function DietDetails(props) {
 
@@ -20,6 +21,7 @@ export default function DietDetails(props) {
   const { route } = props;
   const { navigation } = props;
   const { id, title } = route.params;
+  console.log("🚀 ~ file: DietDetails.js:24 ~ DietDetails ~ id:", id)
 
   const { theme } = usePreferences();
 
@@ -98,10 +100,15 @@ export default function DietDetails(props) {
   }, [isBookmark, item]);
 
   useEffect(() => {
-    getDietById(id).then((response) => {
-      setItem(response[0]);
-      setIsLoaded(true);
+    getSpecificDiet(id).then((res) => {
+      console.log("🚀 ~ file: DietDetails.js:104 ~ getSpecificDiet ~ id:", id)
+      setItem(res);
+      setIsLoaded(false);
     });
+    // getDietById(id).then((response) => {
+    //   setItem(response[0]);
+    //   setIsLoaded(true);
+    // });
   }, []);
 
   if (!isLoaded) {

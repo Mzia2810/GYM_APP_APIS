@@ -57,7 +57,7 @@ export default function LatestWorkouts(props) {
           itemDimension={130}
           data={data}
           renderItem={({ item }) => (
-            <TouchableScale activeOpacity={1} onPress={() => onChangeScreen(item.id, item.title)} activeScale={0.98} tension={100} friction={10}>
+            <TouchableScale activeOpacity={1} onPress={() => onChangeScreen(item._id, item.title)} activeScale={0.98} tension={100} friction={10}>
               <ImageBackground source={{ uri: `${IMAGE_URL}/${item?.image}` }} style={Styles.card4_background} imageStyle={{ borderRadius: 8 }}>
                 <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']} style={Styles.card4_gradient}>
 

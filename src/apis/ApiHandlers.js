@@ -1,4 +1,4 @@
-import { ALL_DIETS, GET_AFFLIATE_PRODUCT, GET_ALL_EXERCISE, LOGIN_URL, MY_EXERCISE, SIGNUP_URL } from "./ApisEndPoints";
+import { ALL_DIETS, GET_AFFLIATE_PRODUCT, GET_ALL_EXERCISE, GET_SPECIFIC_DIETS, LOGIN_URL, MY_EXERCISE, SIGNUP_URL } from "./ApisEndPoints";
 import AxiosInstance from "./AxiosInstance";
 
 //login
@@ -10,24 +10,8 @@ export const loginUser = (email, password) => {
     });
 
   })
-  //   let response = await AxiosInstance.post(`${LOGIN_URL}`, {
-  //     email,
-  //     password,
-  //   });
-  //   console.log("Response login ======> : ", response);
-  //   console.log("Response email ======> : ", email);
-  //   console.log("Response password ======> : ", password);
-  //   const { status, data } = response;
-  //   return { status, data };
 };
-//signup
-// export const signUp = (payload) => {
-//   return new Promise(async (resolve, reject) => {
-//     return await AxiosInstance.post(`${SIGNUP_URL}`, payload);
 
-//   })
-
-// };
 
 // all exercises
 export const GetAllExercise = async (id) => {
@@ -48,6 +32,13 @@ export const GetAllExercise = async (id) => {
     alert("An error has occurred");
     setIsLoading(false);
   }
+};
+export const getSpecificDiet = async (id) => {
+  console.log("🚀 ~ file: ApiHandlers.js:37 ~ getSpecificDiet ~ id:", id)
+  const response = await AxiosInstance.post(`${GET_SPECIFIC_DIETS}?_id=${id}`);
+  console.log("🚀 ~ file: ApiHandlers.js:40 ~ getSpecificDiet ~ response:", response)
+
+  return response?.diets;
 };
 
 // home page exercise

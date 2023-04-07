@@ -5,4 +5,5 @@ export const GET_ALL_EXERCISE = "exercise/myExercise";
 export const GET_SPECIFIC_EXERCISE = "exercise/specificExercise";
 export const GET_AFFLIATE_PRODUCT = "affiliateProduct/getAffliateProduct";
 export const ALL_DIETS = "recipe/allDiets";
+export const GET_SPECIFIC_DIETS = "recipe/specificDietDetail";
 //yhn end points dal dena
