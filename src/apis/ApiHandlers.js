@@ -1,4 +1,4 @@
-import { GET_ALL_EXERCISE, LOGIN_URL, MY_EXERCISE } from "./ApisEndPoints";
+import { ALL_DIETS, GET_AFFLIATE_PRODUCT, GET_ALL_EXERCISE, LOGIN_URL, MY_EXERCISE, SIGNUP_URL } from "./ApisEndPoints";
 import AxiosInstance from "./AxiosInstance";
 
 //login
@@ -20,6 +20,14 @@ export const loginUser = (email, password) => {
   //   const { status, data } = response;
   //   return { status, data };
 };
+//signup
+// export const signUp = (payload) => {
+//   return new Promise(async (resolve, reject) => {
+//     return await AxiosInstance.post(`${SIGNUP_URL}`, payload);
+
+//   })
+
+// };
 
 // all exercises
 export const GetAllExercise = async (id) => {
@@ -55,3 +63,23 @@ export const MyExercise = async (id) => {
     throw new Error(message);
   }
 };
+
+
+export const GetAffliateProduct = async () => {
+
+  let response = await AxiosInstance.get(`${GET_AFFLIATE_PRODUCT}`)
+
+  const { status, data } = response
+
+  return { status, data }
+
+}
+export const GetAllDiets = async () => {
+
+  let response = await AxiosInstance.get(`${ALL_DIETS}`)
+
+  const { status, data } = response
+
+  return { status, data }
+
+}

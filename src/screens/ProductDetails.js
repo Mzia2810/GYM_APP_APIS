@@ -18,25 +18,24 @@ export default function ProductDetails(props) {
   const { width } = useWindowDimensions();
   const { route } = props;
   const { navigation } = props;
-  const { item } = route?.params;
-  // '{"__v": 0, "_id": "641993a7a0fd3f84e721bd0f", 
-  // "affliateLink": "google.com", "description": "Affiliate product update",
-  //  "featured": false, "image": "55d6b8a7-bbf4-4426-a1f0-c9b9236c1919-1680517261351.jpg",
-  //   "price": 500, "status": true, "title": "Affiliate product update", 
-  //   "type": {"_id": "64268f91bacba07c76085715", "title": "protein"}}'
+  const { item, id } = route?.params;
+  console.log("🚀 ~ file: ProductDetails.js:22 ~ ProductDetails ~ item:", item)
   const { theme } = usePreferences();
 
   const [isLoaded, setIsLoaded] = useState(false);
+  const [data, setData] = useState(false);
 
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
   const Strings = Languages[language].texts;
 
   useEffect(() => {
-    // getProductById(id).then((response) => {
-    //   setItem(response[0]);
-    //   setIsLoaded(true);
-    // });
+    {
+      id && getProductById(id).then((response) => {
+        setData(response[0]);
+        setIsLoaded(true);
+      });
+    }
     setTimeout(() => {
       setIsLoaded(true);
     }, 2000)
@@ -78,18 +77,18 @@ export default function ProductDetails(props) {
 
             <View style={{ marginBottom: 30 }}>
 
-              <ImageBackground source={{ uri: `${IMAGE_URL}/${item?.image}` }} style={Styles.Header2Image} resizeMode={'cover'}>
+              <ImageBackground source={{ uri: id ? `${data?.image}` : `${IMAGE_URL}/${item?.image}` }} style={Styles.Header2Image} resizeMode={'cover'}>
                 <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.5)']} style={Styles.Header2Gradient}>
 
-                  <Text style={Styles.Header2SubTitle}>{item?.type?.title}</Text>
-                  <Text style={Styles.Header2Title}>{item?.title}</Text>
-                  <Text style={[Styles.Header2Category, { fontSize: 20, fontWeight: 'bold' }]}>{item?.price}</Text>
+                  <Text style={Styles.Header2SubTitle}>{!id ? item?.type?.title : data?.type}</Text>
+                  <Text style={Styles.Header2Title}>{id ? data?.title : item?.title}</Text>
+                  <Text style={[Styles.Header2Category, { fontSize: 20, fontWeight: 'bold' }]}>{id ? data?.title : item?.price}</Text>
 
                 </LinearGradient>
               </ImageBackground>
 
               <View style={{ marginTop: 15, marginHorizontal: 15 }}>
-                <HTMLView source={{ html: item.description ? item.description : `<p></p>` }} contentWidth={width} tagsStyles={theme === "light" ? HTMLStyles : HTMLStylesDark} />
+                <HTMLView source={{ html: item?.description ? item?.description : data?.description }} contentWidth={width} tagsStyles={theme === "light" ? HTMLStyles : HTMLStylesDark} />
               </View>
 
             </View>

@@ -31,6 +31,7 @@ export default function LatestProducts() {
     getLatestProducts().then((response) => {
       setItems(response);
       setIsLoaded(true);
+
     });
   }, []);
 
@@ -48,7 +49,7 @@ export default function LatestProducts() {
 
         {map(items, (item, i) => (
 
-          <TouchableScale key={i} activeOpacity={1} onPress={() => onChangeScreen(item.id)} activeScale={0.98} tension={100} friction={10}>
+          <TouchableScale key={i} activeOpacity={1} onPress={() => onChangeScreen(item?.id)} activeScale={0.98} tension={100} friction={10}>
             <List.Item
               key={i}
               title={item.title}

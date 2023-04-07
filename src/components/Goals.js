@@ -10,6 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { GetAllExercise, MyExercise } from "../apis/ApiHandlers";
 import { log } from "react-native-reanimated";
+import { IMAGE_URL } from "../apis/AxiosInstance";
 
 export default function Goals() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -100,11 +101,11 @@ function RenderItem(props) {
       >
         <ImageBackground
           source={{
-            uri: `${"https://wb-best-fit.herokuapp.com/"}${item?.image}`,
+            uri: `${IMAGE_URL}/${item?.image}`,
           }}
           style={Styles.card6_background}
           imageStyle={{ borderRadius: 8 }}
-          resizeMode="cover" // or "contain"
+          resizeMode="contain" // or "cover"
         >
           <View style={Styles.card6_gradient}>
             <Text style={Styles.card6_title} numberOfLines={2}>
