@@ -1,62 +1,45 @@
-import { GET_ALL_EXERCISE, LOGIN_URL, MY_EXERCISE,GET_SPECIFIC_EXERCISE } from "./ApisEndPoints";
+import { ALL_DIETS, GET_AFFLIATE_PRODUCT, GET_ALL_EXERCISE, GET_SPECIFIC_DIETS, LOGIN_URL, MY_EXERCISE, SIGNUP_URL } from "./ApisEndPoints";
 import AxiosInstance from "./AxiosInstance";
 
 //login
 export const loginUser = (email, password) => {
   return new Promise(async (resolve, reject) => {
-    let data = JSON.stringify({
+    return await AxiosInstance.post(`${LOGIN_URL}`, {
       email,
       password,
     });
-    return await AxiosInstance.post(`${LOGIN_URL}`, data);
-  });
-  //   let response = await AxiosInstance.post(`${LOGIN_URL}`, {
-  //     email,
-  //     password,
-  //   });
-  //   console.log("Response login ======> : ", response);
-  //   console.log("Response email ======> : ", email);
-  //   console.log("Response password ======> : ", password);
-  //   const { status, data } = response;
-  //   return { status, data };
+
+  })
 };
 
+
 // all exercises
+export const GetAllExercise = async (id) => {
+  try {
+    const response = await AxiosInstance.post(`${GET_ALL_EXERCISE}`, {
+      fullName,
+      email,
+    });
+    if (response.status === 201) {
+      alert(` You have created: ${JSON.stringify(response.data)}`);
+      setIsLoading(false);
+      setFullName("");
+      setEmail("");
+    } else {
+      throw new Error("An error has occurred");
+    }
+  } catch (error) {
+    alert("An error has occurred");
+    setIsLoading(false);
+  }
+};
+export const getSpecificDiet = async (id) => {
+  console.log("🚀 ~ file: ApiHandlers.js:37 ~ getSpecificDiet ~ id:", id)
+  const response = await AxiosInstance.post(`${GET_SPECIFIC_DIETS}?_id=${id}`);
+  console.log("🚀 ~ file: ApiHandlers.js:40 ~ getSpecificDiet ~ response:", response)
 
-// const Get_All_Exercise = async (_id) => {
-//   try {
-//     let data = JSON.stringify({
-//       _id
-//     });
-//     const result = await AxiosInstance.post(`${GET_ALL_EXERCISE}`, data);
-//     if (result.status >= 200 && result.status < 300) {
-//       setAllExerciseData(result.data)
-      
-//       // console.log('this is my all exercises ====>  ',result.data.exercises);
-//     }
-//   } catch (error) {
-//     console.error("Error during All Exercise ==>:", error);
-//   }
-// };
-
-
-// get specific exercise 
-
-// export const GetSpecificExercise = async (_id) => {
-//   try {
-//     let data = JSON.stringify({
-//       _id
-//     });
-//     const result = await AxiosInstance.post(`${GET_SPECIFIC_EXERCISE}`, data);
-//     if (result.status >= 200 && result.status < 300) {
-//       // setAllExerciseData(result.data)
-      
-//       console.log('this is my all exercises ====>  ',result.data);
-//     }
-//   } catch (error) {
-//     console.error("Error during All Exercise ==>:", error);
-//   }
-// };
+  return response?.diets;
+};
 
 // home page exercise
 export const MyExercise = async (id) => {
@@ -71,3 +54,23 @@ export const MyExercise = async (id) => {
     throw new Error(message);
   }
 };
+
+
+export const GetAffliateProduct = async () => {
+
+  let response = await AxiosInstance.get(`${GET_AFFLIATE_PRODUCT}`)
+
+  const { status, data } = response
+
+  return { status, data }
+
+}
+export const GetAllDiets = async () => {
+
+  let response = await AxiosInstance.get(`${ALL_DIETS}`)
+
+  const { status, data } = response
+
+  return { status, data }
+
+}

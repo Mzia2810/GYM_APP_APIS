@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { I18nManager, View} from 'react-native';
-import {getLatestProducts} from "../config/DataApp";
+import { I18nManager, View } from 'react-native';
+import { getLatestProducts } from "../config/DataApp";
 import TouchableScale from 'react-native-touchable-scale';
 import { map } from "lodash";
 import { Avatar, List } from 'react-native-paper';
@@ -22,54 +22,55 @@ export default function LatestProducts() {
   const Strings = Languages[language].texts;
 
   const navigation = useNavigation();
-  
+
   const onChangeScreen = (id) => {
-    navigation.navigate('productdetails', {id});
+    navigation.navigate('productdetails', { id });
   };
-  
+
   useEffect(() => {
     getLatestProducts().then((response) => {
-        setItems(response);
-        setIsLoaded(true);
+      setItems(response);
+      setIsLoaded(true);
+
     });
   }, []);
 
   if (!isLoaded) {
     return (
-      <Loading/>
-      );
+      <Loading />
+    );
   }
 
   if (isLoaded) {
 
-    return(
+    return (
 
-      <View style={{width: '100%', marginTop: 10, marginLeft:20}}>
+      <View style={{ width: '100%', marginTop: 10, marginLeft: 20 }}>
 
         {map(items, (item, i) => (
 
-<TouchableScale key={i} activeOpacity={1} onPress={() => onChangeScreen(item.id)} activeScale={0.98} tension={100} friction={10}>
-<List.Item
-        key={i}
-        title={item.title}
-        titleStyle={{fontWeight: 'bold', fontSize:15, marginBottom: 3}}
-        activeOpacity={1}
-        titleNumberOfLines={2}
-        description={item.price}
-        descriptionStyle={{color: ColorsApp.PRIMARY, fontWeight:'bold', fontSize:15}}
-        underlayColor="transparent"
-        rippleColor="transparent"
-        left={props => <Avatar.Image size={70} style={{marginRight: 10}} source={{uri: item.image}} />}
-        right={props => <List.Icon {...props} icon={rightIcon}
-        style={{alignSelf: 'center', opacity: 0.3, marginBottom:30}}/>}
-      />
-      </TouchableScale>
+          <TouchableScale key={i} activeOpacity={1} onPress={() => onChangeScreen(item?.id)} activeScale={0.98} tension={100} friction={10}>
+            <List.Item
+              key={i}
+              title={item.title}
+              titleStyle={{ fontWeight: 'bold', fontSize: 15, marginBottom: 3 }}
+              activeOpacity={1}
+              titleNumberOfLines={2}
+              description={item.price}
+              descriptionStyle={{ color: ColorsApp.PRIMARY, fontWeight: 'bold', fontSize: 15 }}
+              underlayColor="transparent"
+              rippleColor="transparent"
+              left={props => <Avatar.Image size={70} style={{ marginRight: 10 }} source={{ uri: item.image }} />}
+              right={props => <List.Icon {...props} icon={rightIcon}
+                style={{ alignSelf: 'center', opacity: 0.3, marginBottom: 30 }} />}
+            />
+          </TouchableScale>
 
-          ))}
+        ))}
 
       </View>
 
-      );
+    );
 
   }
 
