@@ -17,9 +17,7 @@ export default function ProductDetails(props) {
 
   const { width } = useWindowDimensions();
   const { route } = props;
-  const { navigation } = props;
   const { item, id } = route?.params;
-  console.log("🚀 ~ file: ProductDetails.js:22 ~ ProductDetails ~ item:", item)
   const { theme } = usePreferences();
 
   const [isLoaded, setIsLoaded] = useState(false);
@@ -82,7 +80,7 @@ export default function ProductDetails(props) {
 
                   <Text style={Styles.Header2SubTitle}>{!id ? item?.type?.title : data?.type}</Text>
                   <Text style={Styles.Header2Title}>{id ? data?.title : item?.title}</Text>
-                  <Text style={[Styles.Header2Category, { fontSize: 20, fontWeight: 'bold' }]}>{id ? data?.title : item?.price}</Text>
+                  <Text style={[Styles.Header2Category, { fontSize: 20, fontWeight: 'bold' }]}>{id ? data?.price : item?.price}</Text>
 
                 </LinearGradient>
               </ImageBackground>
@@ -100,7 +98,7 @@ export default function ProductDetails(props) {
             style={{ marginHorizontal: 50, marginBottom: 20 }}
             label={Strings.ST107}
             icon="cart"
-            onPress={() => buyNowClick(item?.affliateLink)}
+            onPress={() => buyNowClick(id ? data?.link : item?.affliateLink)}
           />
         </View>
 
