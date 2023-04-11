@@ -1,23 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import { ScrollView, View, ImageBackground, SafeAreaView } from 'react-native';
-import Styles from '../config/Styles';
-import Languages from '../languages';
-import LanguageContext from '../languages/LanguageContext';
+import React, { useState, useEffect } from "react";
+import { ScrollView, View, ImageBackground, SafeAreaView } from "react-native";
+import Styles from "../config/Styles";
+import Languages from "../languages";
+import LanguageContext from "../languages/LanguageContext";
 import { getWorkoutsByGoal } from "../config/DataApp";
-import {map} from 'lodash';
-import AppLoading from '../components/InnerLoading';
-import TouchableScale from 'react-native-touchable-scale';
-import { Text, IconButton } from 'react-native-paper';
-import { LinearGradient } from 'expo-linear-gradient';
-import LevelRate from '../components/LevelRate';
-import LoadMoreButton from '../components/LoadMoreButton';
-import NoContentFound from '../components/NoContentFound';
+import { map } from "lodash";
+import AppLoading from "../components/InnerLoading";
+import TouchableScale from "react-native-touchable-scale";
+import { Text, IconButton } from "react-native-paper";
+import { LinearGradient } from "expo-linear-gradient";
+import LevelRate from "../components/LevelRate";
+import LoadMoreButton from "../components/LoadMoreButton";
+import NoContentFound from "../components/NoContentFound";
+import { GET_ALL_EXERCISE } from "../apis/ApisEndPoints";
+import AxiosInstance from "../apis/AxiosInstance";
 
 export default function SingleGoal(props) {
-
   const { route } = props;
   const { navigation } = props;
   const { id, title } = route.params;
+  const { allExerciseData} = route.params;
+
+  // console.log('allExerciseData ============= SingleGoal ====== > : ',allExerciseData)
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [page, setPage] = useState(1);
@@ -28,32 +32,35 @@ export default function SingleGoal(props) {
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
   const Strings = Languages[language].texts;
-  
+
   const onChangeScreen = (screen) => {
     props.navigation.navigate(screen);
   };
 
   const onClickItem = (id, title) => {
-    navigation.navigate('workoutdetails', {id, title});
+    navigation.navigate("workoutdetails", { id, title });
   };
 
   const buttonSearch = () => {
     return (
-      <IconButton icon="magnify" size={24} style={{marginLeft:15}} onPress={() => onChangeScreen('searchworkout')}/>
-      )
+      <IconButton
+        icon="magnify"
+        size={24}
+        style={{ marginLeft: 15 }}
+        onPress={() => onChangeScreen("searchworkout")}
+      />
+    );
   };
 
   const loadMore = () => {
-
     setLoading(true);
-    setPage(page+1);
+    setPage(page + 1);
 
-    getWorkoutsByGoal(id, page+1).then((response) => {
-
+    getWorkoutsByGoal(id, page + 1).then((response) => {
       if (!items) {
         setItems(response);
         setLoading(false);
-      }else{
+      } else {
         setItems([...items, ...response]);
         setLoading(false);
       }
@@ -63,91 +70,104 @@ export default function SingleGoal(props) {
       }
 
       setIsLoaded(true);
-
     });
-
   };
 
   const renderButton = () => {
-
     return (
       <LoadMoreButton
-      Indicator={loading}
-      showButton={showButton}
-      Items={items}
-      Num={5}
-      Click={() => loadMore()}/>
-      )
-  }
+        Indicator={loading}
+        showButton={showButton}
+        Items={items}
+        Num={5}
+        Click={() => loadMore()}
+      />
+    );
+  };
+
+  
+  // const Get_All_Exercise = async (_id) => {
+  //   try {
+  //     let data = JSON.stringify({
+  //       _id
+  //     });
+  //     const result = await AxiosInstance.post(`${GET_ALL_EXERCISE}`, data);
+  //     if (result.status >= 200 && result.status < 300) {
+  //       setAllExerciseData(result.data)
+        
+  //       console.log('this is my all exercises ====>  ',result.data);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error during All Exercise ==>:", error);
+  //   }
+  // };
 
   useEffect(() => {
-  
     props.navigation.setOptions({
       title: title,
-        headerRight: () => buttonSearch()
+      headerRight: () => buttonSearch(),
     });
-  
   }, []);
 
   useEffect(() => {
     getWorkoutsByGoal(id).then((response) => {
-        setItems(response);
-        setIsLoaded(true);
+      setItems(response);
+      setIsLoaded(true);
     });
   }, []);
 
   if (!isLoaded) {
-
+    return <AppLoading />;
+  } else {
     return (
-   
-        <AppLoading/>
-   
-         );
-   
-      }else{
-
- return (
-
-  <ScrollView
-  showsHorizontalScrollIndicator={false}
-  showsVerticalScrollIndicator={false}
->
-    
-<SafeAreaView>
-
-    <View style={Styles.ContentScreen}>
-
-    {map(items, (item, i) => (
-    
-    <TouchableScale key={i} activeOpacity={1} onPress={() => onClickItem(item.id, item.title)} activeScale={0.98} tension={100} friction={10}>
-    <ImageBackground source={{uri: item.image}} style={Styles.card3_background} imageStyle={{borderRadius: 8}}>
-      <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']} style={Styles.card3_gradient}>
-
-      {/* <View style={Styles.card3_viewicon}>
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+      >
+        <SafeAreaView>
+          <View style={Styles.ContentScreen}>
+            {map(allExerciseData, (item, i) => {
+              console.log('Item ki img =====  >  ',item.image)
+              return(
+              <TouchableScale
+                key={item.id}
+                activeOpacity={1}
+                onPress={() => onClickItem(item.id, item.title)}
+                activeScale={0.98}
+                tension={100}
+                friction={10}
+              >
+                <ImageBackground
+                  source={{ uri: item.image }}
+                  style={Styles.card3_background}
+                  imageStyle={{ borderRadius: 8 }}
+                >
+                  <LinearGradient
+                    colors={["rgba(0,0,0,0.1)", "rgba(0,0,0,0.7)"]}
+                    style={Styles.card3_gradient}
+                  >
+                    {/* <View style={Styles.card3_viewicon}>
         {item.rate ? <LevelRate rate={item.rate}/> : null}
       </View> */}
-      
-        <Text numberOfLines={2} style={Styles.card3_title}>{item.title}</Text>
-        <Text numberOfLines={2} style={Styles.card3_subtitle}>{item.duration}</Text>
 
-      </LinearGradient>
-    </ImageBackground>
-    </TouchableScale>
+                    <Text numberOfLines={2} style={Styles.card3_title}>
+                      {item.title}
+                    </Text>
+                    <Text numberOfLines={2} style={Styles.card3_subtitle}>
+                      {item.duration}
+                    </Text>
+                  </LinearGradient>
+                </ImageBackground>
+              </TouchableScale>
+              )
+    })}
 
-          ))}
+            {renderButton()}
 
-    {renderButton()}
-
-    <NoContentFound data={items}/>
-
-    </View>
-    </SafeAreaView>
-    </ScrollView>
-
-      );
-
+            <NoContentFound data={items} />
+          </View>
+        </SafeAreaView>
+      </ScrollView>
+    );
+  }
 }
-
-}
-
-

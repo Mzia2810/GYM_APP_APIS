@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   View,
@@ -15,9 +15,11 @@ import usePreferences from "../hooks/usePreferences";
 import { loginUser } from "../apis/ApiHandlers";
 import AxiosInstance from "../apis/AxiosInstance";
 import { LOGIN_URL } from "../apis/ApisEndPoints";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const auth = getAuth();
+
+// const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MmRiNDE0ZDkyNTIxNWMxNmNkZGQ3YiIsImVtYWlsIjoibWFsaWtAZ21haWwuY29tIiwiaWF0IjoxNjgwODQzMjgwLCJleHAiOjE2ODMzNjMyODB9.KU8mjFXWKKYLHYJJyR8j-3u0Z3BLgPbXOM3sKRB9wps'
 
 export default function Login(props) {
   const contextState = React.useContext(LanguageContext);
@@ -33,44 +35,30 @@ export default function Login(props) {
   console.log(password);
 
   const onChangeScreen = (screen) => {
-    props.navigation.navigate(screen);
+    props.navigation.navigate({
+      screen:screen
+    });
   };
 
   //dummy
   const loginUser = async () => {
     try {
-      const result = await AxiosInstance.post(`${LOGIN_URL}`, {
+      let data = JSON.stringify({
         email,
         password,
       });
-
-      console.log('result',result)
-    //   if (result?.status >= 200 && result?.status < 300) {
-    //     // Success
-    //   } 
-    //   else {
-    //     // Handle error
-    //     throw new Error('Login failed');
-    //   }
-    //   console.log('result',result);
-
-    // } catch (error) {
-    //   console.error('Error during login:', error);
-    //   if (error.response) {
-    //     console.log('Response data:', error.response.data);
-    //     console.log('Response status:', error.response.status);
-    //     console.log('Response headers:', error.response.headers);
-    //   }
-      // Handle error
+      const result = await AxiosInstance.post(`${LOGIN_URL}`, data);
+      if (result.status >= 200 && result.status < 300) {
+        //also do om login api
+        await AsyncStorage.setItem("@token", result?.data?.user?.token || "");
+        
+        console.log("result", result.status);
+        console.log('this is my login ====>  ',result.data);
+        onChangeScreen("home");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
     }
-    catch (error) {
-         console.error('Error during login:', error);
-      //   if (error.response) {
-      //     console.log('Response data:', error.response.data);
-      //     console.log('Response status:', error.response.status);
-      //     console.log('Response headers:', error.response.headers);
-       }
-    
   };
   //end
   const login = async () => {
@@ -100,6 +88,8 @@ export default function Login(props) {
       Alert.alert(Strings.ST33);
     }
   };
+
+ 
 
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: "center" }}>

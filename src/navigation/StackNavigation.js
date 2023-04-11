@@ -75,7 +75,7 @@ const buttonMenu = () => {
 };
 
 return (
-	<Stack.Navigator screenOptions={navigatorOptions}>
+	<Stack.Navigator initialRouteName='home' screenOptions={navigatorOptions}>
 	<Stack.Screen name="home" component={Home} options={{title: Strings.ST1, headerLeft: () => buttonMenu()}} />
 	<Stack.Screen name="profile" component={Profile} options={{title: Strings.ST6, headerLeft: () => buttonBack()}} />
 	<Stack.Screen name="settings" component={Settings} options={{title: Strings.ST108, headerLeft: () => buttonBack()}} />

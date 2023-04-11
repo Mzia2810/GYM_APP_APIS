@@ -55,7 +55,7 @@ export default function Register(props) {
         //also do om login api
        await AsyncStorage.setItem('@token',result?.data?.user?.token||'')
 
-        console.log("result", result.status);
+        // console.log("result", result.status);
         onChangeScreen("StackNavigation")
       }
       
@@ -161,7 +161,7 @@ export default function Register(props) {
           <Button
             mode="contained"
             dark={theme === "dark" ? false : true}
-            onPress={() => signUpUser()}
+            onPress={() => register()}
             style={Styles.AuthButton}
             contentStyle={Styles.AuthButtonContent}
           >

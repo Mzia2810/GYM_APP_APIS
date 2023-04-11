@@ -56,7 +56,7 @@ return (
       <RootStack.Screen name="forgot" component={ForgotPass} options={{title: Strings.ST43, headerTransparent: true, headerLeft: ()=> buttonBack()}} />
       <RootStack.Screen name="about" component={About} options={{title: Strings.ST110}} />
       <RootStack.Screen name="terms" component={Terms} options={{title: Strings.ST8}} />
-      <RootStack.Screen name="StackNavigation" component={StackNavigation} options={{title: Strings.ST8}} />
+      <RootStack.Screen name="StackNavigation" component={StackNavigation} options={{title: Strings.ST1,headerShown:false}} />
     </RootStack.Navigator>
 	)
 }
