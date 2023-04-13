@@ -1,12 +1,18 @@
 import {
   ALL_CATEGORY_DIETS,
   ALL_DIETS,
+  CATEGORY_BLOG,
+  DIET_FAVOURITE,
   GET_AFFLIATE_PRODUCT,
+  GET_ALL_BLOG,
   GET_ALL_EXERCISE,
+  GET_ALL_EXERCISES,
+  GET_ALL_TAGS,
   GET_SPECIFIC_DIETS,
   LOGIN_URL,
   MY_EXERCISE,
-  SIGNUP_URL
+  SIGNUP_URL,
+  SPECIFIC_CATEGORY_DATA
 } from "./ApisEndPoints";
 import AxiosInstance from "./AxiosInstance";
 
@@ -64,14 +70,65 @@ export const getSpecificDiet = async (id) => {
     throw new Error("Failed to get specific diet");
   }
 };
+export const getSpecificCategoryData = async (id) => {
+  try {
+
+    const response = await AxiosInstance.post(`${SPECIFIC_CATEGORY_DATA}`, {
+      _id: id,
+    });
+    return response
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get specific diet");
+  }
+};
+export const setFavouriteDiet = async (userId, dietId) => {
+  try {
+
+    const response = await AxiosInstance.post(`${DIET_FAVOURITE}`, {
+      userId: userId,
+      dietId: dietId
+    });
+    return response?.data
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get specific diet");
+  }
+};
 
 
 // home page exercise/
+export const getAllExercises = async () => {
+  try {
+    const response = await AxiosInstance.get(`${GET_ALL_EXERCISES}`);
+    return response;
+
+  } catch (error) {
+    const { response } = error;
+    const { status, data } = response;
+    const message = data.message || "Something went wrong.";
+    throw new Error(message);
+  }
+};
 export const MyExercise = async (id) => {
   try {
     const response = await AxiosInstance.get(`${MY_EXERCISE}`);
     const { status, data } = response;
     return { status, data };
+  } catch (error) {
+    const { response } = error;
+    const { status, data } = response;
+    const message = data.message || "Something went wrong.";
+    throw new Error(message);
+  }
+};
+
+// blog page posts/
+export const getAllBlog = async () => {
+  try {
+    const response = await AxiosInstance.get(`${GET_ALL_BLOG}`);
+    const { data } = response;
+    return { data };
   } catch (error) {
     const { response } = error;
     const { status, data } = response;
@@ -99,3 +156,30 @@ export const GetAllDiets = async () => {
   return { status, data }
 
 }
+
+// blog .....
+export const getAllTags = async () => {
+  try {
+    const response = await AxiosInstance.get(`${GET_ALL_TAGS}`);
+    return response?.data;
+
+  } catch (error) {
+    const { response } = error;
+    const { status, data } = response;
+    const message = data.message || "Something went wrong.";
+    throw new Error(message);
+  }
+};
+
+export const categoryBlog = async (id) => {
+  try {
+
+    const response = await AxiosInstance.post(`${CATEGORY_BLOG}`, {
+      tagId: id,
+    });
+    return response.data
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get specific diet");
+  }
+};

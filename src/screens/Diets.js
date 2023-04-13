@@ -11,7 +11,7 @@ import { Text, Button } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import LoadMoreButton from '../components/LoadMoreButton';
 import { Grid, Col } from 'react-native-easy-grid';
-import { AllCategoryDiets } from '../apis/ApiHandlers';
+import { AllCategoryDiets, GetAllDiets } from '../apis/ApiHandlers';
 import { IMAGE_URL } from '../apis/AxiosInstance';
 
 export default function Diets(props) {
@@ -20,7 +20,7 @@ export default function Diets(props) {
   const [page, setPage] = useState(1);
   const [items, setItems] = useState([]);
   const [data, setData] = useState([]);
-  // console.log("🚀 ~ file: Diets.js:22 ~ Diets ~ data:", data?.data)
+  // console.log("🚀 ~ file: Diets.js:22 ~ Diets ~ data:", data)
   const [showButton, setshowButton] = useState(true);
   const [loading, setLoading] = useState(false);
 
@@ -74,15 +74,20 @@ export default function Diets(props) {
   }
 
   useEffect(() => {
-    getLatestDiets().then((response) => {
-      setItems(response);
-      setIsLoaded(true);
-    });
+    // getLatestDiets().then((response) => {
+    //   setItems(response);
+    //   setIsLoaded(true);
+    // });
   }, []);
   useEffect(() => {
-    AllCategoryDiets()
-      .then(res => setData(res.data))
-      .catch(error => console.error(error));
+    // AllCategoryDiets()
+    //   .then(res => setData(res.data))
+    //   .catch(error => console.error(error));
+    // setIsLoaded(true);
+    GetAllDiets().then((response) => {
+      setData(response?.data?.diets);
+      setIsLoaded(true);
+    });
   }, []);
 
   if (!isLoaded) {
@@ -119,15 +124,15 @@ export default function Diets(props) {
 
             {map(data, (item, i) => (
 
-              <TouchableScale key={i} activeOpacity={1} onPress={() => onClickItem(item?.categoryId, item?.categoryTitle)} activeScale={0.98} tension={100} friction={10}>
+              <TouchableScale key={i} activeOpacity={1} onPress={() => onClickItem(item._id, item.title)} activeScale={0.98} tension={100} friction={10}>
                 <ImageBackground source={{
-                  uri: `${IMAGE_URL}/${item?.categoryImage}`,
+                  uri: `${IMAGE_URL}/${item?.image}`,
                 }} style={Styles.card3_background} imageStyle={{ borderRadius: 8 }}>
                   <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']} style={Styles.card3_gradient}>
 
                     <Text numberOfLines={1} style={Styles.card3_category}>{item?.recipeLength}</Text>
-                    <Text numberOfLines={2} style={Styles.card3_title}>{item?.categoryTitle}</Text>
-                    {/* <Text numberOfLines={1} style={[Styles.card3_subtitle, { opacity: 0.6 }]}>{item?.calories} {Strings.ST46} | {Strings.ST62} {item.servings}</Text> */}
+                    <Text numberOfLines={2} style={Styles.card3_title}>{item?.title}</Text>
+                    <Text numberOfLines={1} style={[Styles.card3_subtitle, { opacity: 0.6 }]}>{item?.calories} {Strings.ST46} | {Strings.ST62} {item.servings}</Text>
 
                   </LinearGradient>
                 </ImageBackground>
@@ -135,7 +140,7 @@ export default function Diets(props) {
 
             ))}
 
-            {renderButton()}
+            {/* {renderButton()} */}
 
           </View>
         </SafeAreaView>

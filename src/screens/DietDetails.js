@@ -22,6 +22,7 @@ export default function DietDetails(props) {
   const { route } = props;
   const { navigation } = props;
   const { id, title, } = route.params;
+  // console.log("🚀 ~ file: DietDetails.js:25 ~ DietDetails ~ id:", id)
 
   const { theme } = usePreferences();
 
@@ -58,9 +59,9 @@ export default function DietDetails(props) {
     renderBookMark(id);
   }, []);
 
-  const saveBookmark = (id, title, image) => {
+  const saveBookmark = (id) => {
 
-    let data = { id, title, image };
+    let data = { id, };
     setBookmark(true);
     setDietBookmark(data).then(token => {
       if (token === true) {
@@ -84,11 +85,15 @@ export default function DietDetails(props) {
 
     if (!isBookmark) {
       return (
-        <IconButton icon="heart-outline" iconColor={'#fff'} size={24} style={{ marginRight: 15 }} onPress={() => saveBookmark(data?.diets?.id, data?.diets?.title, data?.diets?.image)} />
+        <IconButton icon="heart-outline" iconColor={'#fff'} size={24}
+          style={{ marginRight: 15 }}
+          onPress={() => saveBookmark(id)} />
       )
     } else {
       return (
-        <IconButton icon="heart" iconColor={"#ff0000"} size={24} style={{ marginRight: 15 }} onPress={() => removeBookmark(data?.diets?.id)} />
+        <IconButton icon="heart" iconColor={"#ff0000"} size={24}
+          style={{ marginRight: 15 }}
+          onPress={() => removeBookmark(id)} />
       )
     }
   }
@@ -99,7 +104,7 @@ export default function DietDetails(props) {
       headerRight: () => renderButtonFav()
     });
 
-  }, [isBookmark, item]);
+  }, [isBookmark, data]);
 
   useEffect(() => {
     // getDietById(id).then((response) => {
@@ -109,7 +114,7 @@ export default function DietDetails(props) {
     getSpecificDiet(id)
       .then(res => setData(res?.data))
       .catch(error => console.error(error));
-
+    setIsLoaded(true)
   }, []);
 
   if (!isLoaded) {
@@ -180,7 +185,7 @@ export default function DietDetails(props) {
               <Card style={{ marginBottom: 15, borderWidth: 0 }} mode={'outlined'}>
                 <Card.Title title={Strings.ST115} />
                 <Card.Content>
-                  <HTMLView source={{ html: data?.diets?.ingredients ? data?.diets?.ingredients : `<p></p>` }} contentWidth={width} tagsStyles={theme === "light" ? HTMLStyles : HTMLStylesDark} />
+                  <HTMLView source={{ html: data?.diets?.ingrediants ? data?.diets?.ingrediants : `<p></p>` }} contentWidth={width} tagsStyles={theme === "light" ? HTMLStyles : HTMLStylesDark} />
                 </Card.Content>
               </Card>
 

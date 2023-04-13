@@ -13,35 +13,35 @@ export default function Blog(props) {
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
   const Strings = Languages[language].texts;
-  
+
   const onChangeScreen = (screen) => {
     props.navigation.navigate(screen);
   };
 
- return (
+  return (
 
-  <ScrollView
-  showsHorizontalScrollIndicator={false}
-  showsVerticalScrollIndicator={false}
->
-    
-<SafeAreaView>
+    <ScrollView
+      showsHorizontalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
+    >
 
-    <View style={Styles.HomeScreen}>
+      <SafeAreaView>
 
-    <FeaturedPosts/>
+        <View style={Styles.HomeScreen}>
 
-    <Heading title={Strings.ST72} button={() => onChangeScreen('tags')}/>
-    <PostTags/>
+          <FeaturedPosts />
 
-    <Heading title={Strings.ST73} button={() => onChangeScreen('posts')}/>
-    <LatestPosts/>
+          <Heading title={Strings.ST72} button={() => onChangeScreen('posttags')} />
+          <PostTags />
 
-    </View>
-    </SafeAreaView>
+          <Heading title={Strings.ST73} button={() => onChangeScreen('posts')} />
+          <LatestPosts />
+
+        </View>
+      </SafeAreaView>
     </ScrollView>
 
-      );
+  );
 
 }
 

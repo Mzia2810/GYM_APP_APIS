@@ -8,7 +8,7 @@ import TouchableScale from "react-native-touchable-scale";
 import { Text, Avatar } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import { MyExercise, GetSpecificExercise } from "../apis/ApiHandlers";
+import { MyExercise, GetSpecificExercise, getAllExercises } from "../apis/ApiHandlers";
 import { log } from "react-native-reanimated";
 import { IMAGE_URL } from "../apis/AxiosInstance";
 import { GET_ALL_EXERCISE } from "../apis/ApisEndPoints";
@@ -16,6 +16,7 @@ import { GET_ALL_EXERCISE } from "../apis/ApisEndPoints";
 export default function Goals() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [items, setItems] = useState([]);
+  const [iid, setId] = useState([]);
   const [data, setData] = useState([]);
   const [allExerciseData, setAllExerciseData] = useState([]);
   const [specific, setSpecificExercise] = useState([])
@@ -78,8 +79,16 @@ export default function Goals() {
     // Get_Specific_Exercise('641d4d142a97307acb5e17b3')
     getGoals().then((response) => {
       setItems(response);
+      setItems(response);
       setIsLoaded(true);
     });
+    // getAllExercises()
+    //   .then((response) => {
+    //     setId(response.data);
+    //     setIsLoaded(true);
+    //     console.log("🚀 ~ file: Goals.js:20 ~ Goals ~ oood:", iid)
+
+    //   });
 
   }, []);
 

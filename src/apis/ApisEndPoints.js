@@ -7,4 +7,10 @@ export const GET_AFFLIATE_PRODUCT = "affiliateProduct/getAffliateProduct";
 export const ALL_DIETS = "recipe/allDiets";
 export const GET_SPECIFIC_DIETS = "recipe/specificDietDetail";
 export const ALL_CATEGORY_DIETS = "recipe/AllcategoryDiets";
+export const SPECIFIC_CATEGORY_DATA = "recipe/specificCategoryData";
+export const DIET_FAVOURITE = "recipe/dietFavourite";
+export const GET_ALL_BLOG = "post/getAllPost";
+export const GET_ALL_EXERCISES = "workout/allWorkoutSpecificCategory";
+export const GET_ALL_TAGS = "tag/getAllTag";
+export const CATEGORY_BLOG = "post/categoryBlog";
 //yhn end points dal dena

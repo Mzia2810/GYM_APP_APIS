@@ -9,12 +9,15 @@ import TouchableScale from 'react-native-touchable-scale';
 import { List, Avatar } from 'react-native-paper';
 import { map } from 'lodash';
 import ColorsApp from '../config/ColorsApp';
+import { AllCategoryDiets } from '../apis/ApiHandlers';
+import { IMAGE_URL } from '../apis/AxiosInstance';
 
 export default function Categories(props) {
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [items, setItems] = useState([]);
-  console.log("🚀 ~ file: Categories.js:17 ~ Categories ~ items:", items)
+  const [data, setData] = useState([]);
+  // console.log("🚀 ~ file: Categories.js:18 ~ Categories ~ data:", data)
 
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
@@ -26,11 +29,17 @@ export default function Categories(props) {
     props.navigation.navigate('singlecategory', { id, title });
   };
 
+  // useEffect(() => {
+  //   getCategories().then((response) => {
+  //     setItems(response);
+  //     setIsLoaded(true);
+  //   });
+  // }, []);
   useEffect(() => {
-    getCategories().then((response) => {
-      setItems(response);
-      setIsLoaded(true);
-    });
+    AllCategoryDiets()
+      .then(res => setData(res.data))
+      .catch(error => console.error(error));
+    setIsLoaded(true);
   }, []);
 
   if (!isLoaded) {
@@ -54,19 +63,19 @@ export default function Categories(props) {
 
           <View style={Styles.ContentScreen}>
 
-            {map(items, (item, i) => (
+            {map(data, (data, i) => (
 
-              <TouchableScale key={i} activeOpacity={1} onPress={() => onClickItem(item.id, item.title)} activeScale={0.98} tension={100} friction={10}>
+              <TouchableScale key={i} activeOpacity={1} onPress={() => onClickItem(data?.categoryId, data?.title)} activeScale={0.98} tension={100} friction={10}>
                 <List.Item
                   key={i}
-                  title={item.title}
+                  title={data?.categoryTitle}
                   titleStyle={{ fontWeight: 'bold', fontSize: 15, marginBottom: 3 }}
                   activeOpacity={1}
-                  description={item.total + ' ' + Strings.ST63}
+                  description={data?.recipeLength + ' ' + Strings.ST63}
                   titleNumberOfLines={2}
                   underlayColor="transparent"
                   rippleColor="transparent"
-                  left={props => <Avatar.Image size={80} style={{ marginRight: 10 }} source={{ uri: item.image }} />}
+                  left={props => <Avatar.Image size={80} style={{ marginRight: 10 }} source={{ uri: `${IMAGE_URL}/${data?.categoryImage}` }} />}
                   right={props => <List.Icon {...props} icon={rightIcon} style={{ alignSelf: 'center', opacity: 0.3, marginBottom: 30 }} color={ColorsApp.PRIMARY} />}
                 />
               </TouchableScale>
