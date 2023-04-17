@@ -8,22 +8,24 @@ import TouchableScale from "react-native-touchable-scale";
 import { Text, Avatar } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import { MyExercise,GetSpecificExercise } from "../apis/ApiHandlers";
+import { MyExercise, GetSpecificExercise, getAllExercises } from "../apis/ApiHandlers";
 import { log } from "react-native-reanimated";
-import AxiosInstance, { IMAGE_URL} from "../apis/AxiosInstance";
- import { GET_ALL_EXERCISE } from "../apis/ApisEndPoints";
+import { IMAGE_URL } from "../apis/AxiosInstance";
+import { GET_ALL_EXERCISE } from "../apis/ApisEndPoints";
+
 export default function Goals() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [items, setItems] = useState([]);
+  const [iid, setId] = useState([]);
   const [data, setData] = useState([]);
   const [allExerciseData, setAllExerciseData] = useState([]);
-  const [specific,setSpecificExercise] = useState([])
+  const [specific, setSpecificExercise] = useState([])
 
 
 
 
 
-//  get Specific exercises
+  //  get Specific exercises
   const Get_Specific_Exercise = async (_id) => {
     try {
       let data = JSON.stringify({
@@ -32,14 +34,15 @@ export default function Goals() {
       const result = await AxiosInstance.post(`${GET_SPECIFIC_EXERCISE}`, data);
       if (result.status >= 200 && result.status < 300) {
         setSpecificExercise(result.data)
-        
-        // console.log('this is my Specific exercises ====>  ',result.data);
+
+        console.log('this is my Specific exercises ====>  ', result.data);
       }
     } catch (error) {
       console.error("Error during Specific Exercise ==>:", error);
     }
   };
-//  get all exercises
+
+  //  get all exercises
   const Get_All_Exercise = async (_id) => {
     try {
       let data = JSON.stringify({
@@ -47,18 +50,16 @@ export default function Goals() {
       });
       const result = await AxiosInstance.post(`${GET_ALL_EXERCISE}`, data);
       if (result.status >= 200 && result.status < 300) {
-        setAllExerciseData(result.data)
-        
+        setItems(result.data)
+
         // console.log('this is my all exercises ====>  ',result.data);
       }
     } catch (error) {
       console.error("Error during All Exercise ==>:", error);
     }
-  };
+  }
 
- 
 
-  // console.log('allExerciseData ============> ',allExerciseData)
 
 
   useEffect(() => {
@@ -78,8 +79,16 @@ export default function Goals() {
     // Get_Specific_Exercise('641d4d142a97307acb5e17b3')
     getGoals().then((response) => {
       setItems(response);
+      setItems(response);
       setIsLoaded(true);
     });
+    // getAllExercises()
+    //   .then((response) => {
+    //     setId(response.data);
+    //     setIsLoaded(true);
+    //     console.log("🚀 ~ file: Goals.js:20 ~ Goals ~ oood:", iid)
+
+    //   });
 
   }, []);
 
@@ -97,8 +106,8 @@ export default function Goals() {
           showsHorizontalScrollIndicator={false}
         >
           {map(data, (item, index) => (
-            // console.log('item ==> : ',data)
-            <RenderItem key={item._id} Get_All_Exercise={Get_All_Exercise}  allExerciseData={allExerciseData} item={item} />
+            // console.log('item ==> : ', data)
+            < RenderItem key={item._id} Get_All_Exercise={Get_All_Exercise} allExerciseData={items} item={item} />
           ))}
         </ScrollView>
       </View>
@@ -110,7 +119,7 @@ function RenderItem(props) {
   const navigation = useNavigation();
   const { allExerciseData } = props;
   const { item } = props;
- 
+
   const { _id, title } = item;
 
   const onChangeScreen = (_id, title) => {
@@ -119,13 +128,12 @@ function RenderItem(props) {
     navigation.navigate("singlegoal", {
       id: _id,
       title: title,
-      allExerciseData:allExerciseData,
+      allExerciseData: allExerciseData,
     });
   };
 
-  
 
-  // console.log('allExerciseData =================== ...=======> : ',allExerciseData);
+
 
   return (
     <View style={Styles.card6_view}>

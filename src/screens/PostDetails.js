@@ -12,18 +12,20 @@ import { HTMLStylesDark } from '../config/HTMLStylesDark';
 import HTMLView from 'react-native-render-html';
 import usePreferences from '../hooks/usePreferences';
 import moment from 'moment';
+import { IMAGE_URL } from '../apis/AxiosInstance';
 
 export default function PostDetails(props) {
 
   const { width } = useWindowDimensions();
   const { route } = props;
   const { navigation } = props;
-  const { id } = route.params;
+  const { id, itemdata } = route.params;
 
-  const {theme} = usePreferences();
-  
+  const { theme } = usePreferences();
+
   const [isLoaded, setIsLoaded] = useState(false);
   const [item, setItem] = useState([]);
+  console.log("🚀 ~ file: PostDetails.js:28 ~ PostDetails ~ item:", item)
 
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
@@ -31,8 +33,8 @@ export default function PostDetails(props) {
 
   useEffect(() => {
     getPostById(id).then((response) => {
-        setItem(response[0]);
-        setIsLoaded(true);
+      setItem(response[0]);
+      setIsLoaded(true);
     });
   }, []);
 
@@ -40,51 +42,51 @@ export default function PostDetails(props) {
   if (!isLoaded) {
 
     return (
-   
-        <View style={{marginTop:50}}>
-          <AppLoading/>
-          </View>
-   
-         );
-   
-      }else{
 
- return (
+      <View style={{ marginTop: 50 }}>
+        <AppLoading />
+      </View>
 
-<View style={{flex:1}}>
+    );
 
-  <ScrollView
-  showsHorizontalScrollIndicator={false}
-  showsVerticalScrollIndicator={false}
->
-    
-<SafeAreaView>
+  } else {
 
-    <View>
+    return (
 
-    <ImageBackground source={{uri: item.image}} style={Styles.Header2Image} resizeMode={'cover'}>
-    <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.5)']} style={Styles.Header2Gradient}>
+      <View style={{ flex: 1 }}>
 
-    <Text style={[Styles.Header2SubTitle, {fontSize: 14}]}>{moment(item.date).fromNow()}</Text>
-    <Text style={Styles.Header2Title}>{item.title}</Text>
-    <Text style={[Styles.Header2Category, {fontSize: 18, fontWeight:'bold'}]}>{item.tag}</Text>
+        <ScrollView
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+        >
 
-    </LinearGradient>
-    </ImageBackground>
+          <SafeAreaView>
 
-    <View style={{marginTop:15, marginHorizontal:15}}>
-    <HTMLView source={{html: item.description ? item.description : `<p></p>`}} contentWidth={width} tagsStyles={theme === "light" ? HTMLStyles : HTMLStylesDark}/>
-    </View>
+            <View>
 
-    </View>
-    </SafeAreaView>
-    </ScrollView>
+              <ImageBackground source={{ uri: id ? item?.image : `${IMAGE_URL}/${itemdata?.image}` }} style={Styles.Header2Image} resizeMode={'cover'}>
+                <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.5)']} style={Styles.Header2Gradient}>
 
-</View>
+                  <Text style={[Styles.Header2SubTitle, { fontSize: 14 }]}>{moment(id ? item?.date : itemdata?.date).fromNow()}</Text>
+                  <Text style={Styles.Header2Title}>{id ? item?.title : itemdata?.title}</Text>
+                  <Text style={[Styles.Header2Category, { fontSize: 18, fontWeight: 'bold' }]}>{id ? item?.tag : itemdata?.tag?.title}</Text>
 
-      );
+                </LinearGradient>
+              </ImageBackground>
 
-}
+              <View style={{ marginTop: 15, marginHorizontal: 15 }}>
+                <HTMLView source={{ html: id ? item.description : itemdata?.description }} contentWidth={width} tagsStyles={theme === "light" ? HTMLStyles : HTMLStylesDark} />
+              </View>
+
+            </View>
+          </SafeAreaView>
+        </ScrollView>
+
+      </View>
+
+    );
+
+  }
 
 }
 

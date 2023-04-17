@@ -8,5 +8,15 @@ export const GET_SPECIFIC_DRAWER_EXERCISE = "exercise/specificExercise";
 export const GET_AFFLIATE_PRODUCT = "affiliateProduct/getAffliateProduct";
 export const ALL_DIETS = "recipe/allDiets";
 export const GET_SPECIFIC_DIETS = "recipe/specificDietDetail";
-export const GET_GOALS= 'goal/getAllGoal';
+export const ALL_CATEGORY_DIETS = "recipe/AllcategoryDiets";
+export const SPECIFIC_CATEGORY_DATA = "recipe/specificCategoryData";
+export const DIET_FAVOURITE = "recipe/dietFavourite";
+export const GET_DIET_FAVOURITE = "recipe/getdietFavourite";
+export const GET_ALL_BLOG = "post/getAllPost";
+export const GET_ALL_EXERCISES = "workout/allWorkoutSpecificCategory";
+export const GET_ALL_TAGS = "tag/getAllTag";
+export const CATEGORY_BLOG = "post/categoryBlog";
+export const GET_PRODUCT_TYPE = "productType/getProductType";
+export const GET_PRODUCTS_BY_TYPE = "affiliateProduct/getProductsByType";
+export const GET_PLANS = "plan/getPlans";
 //yhn end points dal dena

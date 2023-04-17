@@ -4,45 +4,49 @@ import Styles from '../config/Styles';
 import Languages from '../languages';
 import LanguageContext from '../languages/LanguageContext';
 import { getLatestDiets } from "../config/DataApp";
-import {map} from 'lodash';
+import { map } from 'lodash';
 import AppLoading from '../components/InnerLoading';
 import TouchableScale from 'react-native-touchable-scale';
 import { Text, Button } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import LoadMoreButton from '../components/LoadMoreButton';
 import { Grid, Col } from 'react-native-easy-grid';
+import { AllCategoryDiets, GetAllDiets } from '../apis/ApiHandlers';
+import { IMAGE_URL } from '../apis/AxiosInstance';
 
 export default function Diets(props) {
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [page, setPage] = useState(1);
   const [items, setItems] = useState([]);
+  const [data, setData] = useState([]);
+  console.log("🚀 ~ file: Diets.js:22 ~ Diets ~ data:", data)
   const [showButton, setshowButton] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
   const Strings = Languages[language].texts;
-  
+
   const onChangeScreen = (screen) => {
     props.navigation.navigate(screen);
   };
 
   const onClickItem = (id, title) => {
-    props.navigation.navigate('dietdetails', {id, title});
+    props.navigation.navigate('dietdetails', { id, title });
   };
 
   const loadMore = () => {
 
     setLoading(true);
-    setPage(page+1);
+    setPage(page + 1);
 
-    getLatestDiets(page+1).then((response) => {
+    getLatestDiets(page + 1).then((response) => {
 
       if (!items) {
         setItems(response);
         setLoading(false);
-      }else{
+      } else {
         setItems([...items, ...response]);
         setLoading(false);
       }
@@ -61,75 +65,90 @@ export default function Diets(props) {
 
     return (
       <LoadMoreButton
-      Indicator={loading}
-      showButton={showButton}
-      Items={items}
-      Num={5}
-      Click={() => loadMore()}/>
-      )
+        Indicator={loading}
+        showButton={showButton}
+        Items={data}
+        Num={5}
+        Click={() => loadMore()} />
+    )
   }
 
   useEffect(() => {
-    getLatestDiets().then((response) => {
-        setItems(response);
-        setIsLoaded(true);
+    // getLatestDiets().then((response) => {
+    //   setItems(response);
+    //   setIsLoaded(true);
+    // });
+  }, []);
+  useEffect(() => {
+    // AllCategoryDiets()
+    //   .then(res => setData(res.data))
+    //   .catch(error => console.error(error));
+    // setIsLoaded(true);
+    GetAllDiets().then((response) => {
+      setData(response?.data?.diets);
+      setIsLoaded(true);
     });
   }, []);
 
   if (!isLoaded) {
 
     return (
-   
-        <AppLoading/>
-   
-         );
-   
-      }else{
 
- return (
+      <AppLoading />
 
-  <ScrollView
-  showsHorizontalScrollIndicator={false}
-  showsVerticalScrollIndicator={false}
->
-    
-<SafeAreaView>
+    );
 
-    <View style={Styles.ContentScreen}>
+  } else {
 
-      <Grid style={{marginBottom: 15, marginHorizontal: 5}}>
-        <Col style={{margin: 5}}>
-        <Button icon="tag" mode="contained" labelStyle={{fontSize:15, letterSpacing:0}} uppercase={false} style={{elevation: 0}} contentStyle={{width:'100%'}} onPress={() => onChangeScreen('categories')}>
-          {Strings.ST28}
-        </Button>
-        </Col>
-        </Grid>
+    return (
 
-    {map(items, (item, i) => (
-    
-    <TouchableScale key={i} activeOpacity={1} onPress={() => onClickItem(item.id, item.title)} activeScale={0.98} tension={100} friction={10}>
-    <ImageBackground source={{uri: item.image}} style={Styles.card3_background} imageStyle={{borderRadius: 8}}>
-      <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']} style={Styles.card3_gradient}>
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+      >
 
-        <Text numberOfLines={1} style={Styles.card3_category}>{item.category}</Text>
-        <Text numberOfLines={2} style={Styles.card3_title}>{item.title}</Text>
-        <Text numberOfLines={1} style={[Styles.card3_subtitle, {opacity:0.6}]}>{item.calories} {Strings.ST46} | {Strings.ST62} {item.servings}</Text>
+        <SafeAreaView>
 
-      </LinearGradient>
-    </ImageBackground>
-    </TouchableScale>
+          <View style={Styles.ContentScreen}>
 
-          ))}
+            <Grid style={{ marginBottom: 15, marginHorizontal: 5 }}>
+              <Col style={{ margin: 5 }}>
+                <Button icon="tag" mode="contained"
+                  labelStyle={{ fontSize: 15, letterSpacing: 0 }}
+                  uppercase={false} style={{ elevation: 0 }}
+                  contentStyle={{ width: '100%' }} onPress={() => onChangeScreen('categories')}>
+                  {Strings.ST28}
+                </Button>
+              </Col>
+            </Grid>
 
-    {renderButton()}
+            {map(data, (item, i) => (
 
-    </View>
-    </SafeAreaView>
-    </ScrollView>
+              <TouchableScale key={i} activeOpacity={1} onPress={() => onClickItem(item._id, item.title)} activeScale={0.98} tension={100} friction={10}>
+                <ImageBackground source={{
+                  uri: `${IMAGE_URL}/${item?.image}`,
+                }} style={Styles.card3_background} imageStyle={{ borderRadius: 8 }}>
+                  <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']} style={Styles.card3_gradient}>
 
-      );
+                    <Text numberOfLines={1} style={Styles.card3_category}>{item?.recipeLength}</Text>
+                    <Text numberOfLines={2} style={Styles.card3_title}>{item?.title}</Text>
+                    <Text numberOfLines={1} style={[Styles.card3_subtitle, { opacity: 0.6 }]}>{item?.calories} {Strings.ST46} | {Strings.ST62} {item.servings}</Text>
 
-}
+                  </LinearGradient>
+                </ImageBackground>
+              </TouchableScale>
+
+            ))}
+
+            {/* {renderButton()} */}
+
+          </View>
+        </SafeAreaView>
+      </ScrollView>
+
+    );
+
+  }
 
 }
 

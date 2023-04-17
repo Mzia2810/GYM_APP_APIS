@@ -5,18 +5,18 @@ export const IMAGE_URL = 'https://wb-best-fit.herokuapp.com';
 const AxiosInstance = axios.create({
   baseURL: "https://wb-best-fit.herokuapp.com/api/",
   timeout: 5000,
-  headers: { "X-Custom-Header": "foobar" , 'Content-Type': 'application/json'},
+  headers: { "X-Custom-Header": "foobar", 'Content-Type': 'application/json' },
 });
 
 //Now handle response
 
 // Add a request interceptor
 AxiosInstance.interceptors.request.use(
- async function (config) {
+  async function (config) {
     // Do something before request is sent
-    let token =await AsyncStorage.getItem('@token')
-    if(!!token){
-        config.headers.Authorization=`Bearer ${token}`
+    let token = await AsyncStorage.getItem('@token')
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
     }
     return config;
   },
@@ -24,6 +24,7 @@ AxiosInstance.interceptors.request.use(
     // Do something with request error
     return Promise.reject(error);
   }
+
 );
 
 // Add a response interceptor
