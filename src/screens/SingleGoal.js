@@ -127,7 +127,7 @@ export default function SingleGoal(props) {
         <SafeAreaView>
           <View style={Styles.ContentScreen}>
             {map(allExerciseData, (item, i) => {
-              console.log('Item ki img =====  >  ',item.image)
+              console.log('Item ki img =====  >  ',item)
               return(
               <TouchableScale
                 key={item.id}

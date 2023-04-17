@@ -9,6 +9,7 @@ import Languages from '../languages';
 import LanguageContext from '../languages/LanguageContext';
 import Levels from '../components/Levels';
 import LatestDiets from '../components/LatestDiets';
+import { GetAllExerciseCategory } from '../apis/ApiHandlers';
 
 export default function Home(props) {
 
@@ -17,8 +18,19 @@ export default function Home(props) {
   const Strings = Languages[language].texts;
 
   const onChangeScreen = (screen) => {
+    GetAllExerciseCategory()
     props.navigation.navigate(screen);
 };
+
+
+
+useEffect(() => {
+  // console.log('hereeeeeeeeeeeeeeeeeeeee ======= > ');
+  GetAllExerciseCategory().then((response) => {
+    // console.log('hereeeeeeeeeeeeeeeeeeeee ======= > ',response.data);
+    // setIsLoaded(true);
+  });
+}, []);
 
 // async function getData() {
 //   try {
@@ -33,6 +45,9 @@ export default function Home(props) {
 // useEffect(() => {
 //   getData()
 // },[])
+
+
+
 
  return (
   <ScrollView

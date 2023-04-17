@@ -10,8 +10,8 @@ import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { MyExercise,GetSpecificExercise } from "../apis/ApiHandlers";
 import { log } from "react-native-reanimated";
-import { IMAGE_URL } from "../apis/AxiosInstance";
-
+import AxiosInstance, { IMAGE_URL} from "../apis/AxiosInstance";
+ import { GET_ALL_EXERCISE } from "../apis/ApisEndPoints";
 export default function Goals() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [items, setItems] = useState([]);
@@ -33,7 +33,7 @@ export default function Goals() {
       if (result.status >= 200 && result.status < 300) {
         setSpecificExercise(result.data)
         
-        console.log('this is my Specific exercises ====>  ',result.data);
+        // console.log('this is my Specific exercises ====>  ',result.data);
       }
     } catch (error) {
       console.error("Error during Specific Exercise ==>:", error);
