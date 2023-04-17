@@ -20,7 +20,7 @@ export default function Diets(props) {
   const [page, setPage] = useState(1);
   const [items, setItems] = useState([]);
   const [data, setData] = useState([]);
-  // console.log("🚀 ~ file: Diets.js:22 ~ Diets ~ data:", data)
+  console.log("🚀 ~ file: Diets.js:22 ~ Diets ~ data:", data)
   const [showButton, setshowButton] = useState(true);
   const [loading, setLoading] = useState(false);
 

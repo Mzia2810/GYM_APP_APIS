@@ -5,17 +5,23 @@ import Loading from './InnerLoading';
 import { getProductTypes } from "../config/DataApp";
 import { Chip } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import { getProductType } from '../apis/ApiHandlers';
 
 export default function ProductTypes() {
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [items, setItems] = useState([]);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
-    getProductTypes().then((response) => {
-      setItems(response);
+    getProductType().then((response) => {
+      setData(response?.data?.product);
       setIsLoaded(true);
     });
+    // getProductTypes().then((response) => {
+    //   setItems(response);
+    //   setIsLoaded(true);
+    // });
   }, []);
 
   if (!isLoaded) {
@@ -33,7 +39,7 @@ export default function ProductTypes() {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
         >
-          {map(items, (item, index) => (
+          {map(data, (item, index) => (
             <RenderItem key={index} item={item} />
 
           ))}
@@ -48,20 +54,20 @@ function RenderItem(props) {
 
   const navigation = useNavigation();
 
-  const onChangeScreen = (id, title) => {
+  const onChangeScreen = (title, id) => {
     navigation.navigate('singletype', {
-      id: id,
-      title: title
+      title: title,
+      id: id
     });
   };
 
   const { item } = props;
-  const { id, title } = item;
+  const { title, _id } = item;
 
   return (
 
     <View style={{ marginLeft: 15 }}>
-      <Chip icon="tag" mode="outlined" onPress={() => onChangeScreen(id, title)}>{item.title}</Chip>
+      <Chip icon="tag" mode="outlined" onPress={() => onChangeScreen(title, _id)}>{item?.title}</Chip>
     </View>
 
   )

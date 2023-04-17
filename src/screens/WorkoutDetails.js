@@ -11,12 +11,14 @@ import { Col, Grid } from 'react-native-easy-grid';
 import Days from '../components/Days';
 import LevelRate from '../components/LevelRate';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { IMAGE_URL } from '../apis/AxiosInstance';
 
 export default function WorkoutDetails(props) {
 
   const { route } = props;
   const { navigation } = props;
-  const { id, title } = route.params;
+  const { id = 0, title, itemData } = route.params;
+  console.log("🚀 ~ file: WorkoutDetails.js:20 ~ WorkoutDetails ~ itemData:", itemData)
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [isBookmark, setBookmark] = useState('');
@@ -29,20 +31,20 @@ export default function WorkoutDetails(props) {
   const renderBookMark = async (id) => {
     await AsyncStorage.getItem('workoutsFav').then(token => {
       const res = JSON.parse(token);
- 
+
       if (res !== null) {
-       let data = res.find(value => value.id === id);
- 
-       if (data !== null) {
-         let data = res.find(value => value.id === id);
-         return data == null ? setBookmark(false) : setBookmark(true);
-       }
- 
-     } else {
-       return false;
-     }
- 
-   });
+        let data = res.find(value => value.id === id);
+
+        if (data !== null) {
+          let data = res.find(value => value.id === id);
+          return data == null ? setBookmark(false) : setBookmark(true);
+        }
+
+      } else {
+        return false;
+      }
+
+    });
   };
 
   useEffect(() => {
@@ -51,113 +53,113 @@ export default function WorkoutDetails(props) {
 
   const saveBookmark = (id, title, image) => {
 
-    let data = {id, title, image};
+    let data = { id, title, image };
     setBookmark(true);
     setWorkoutBookmark(data).then(token => {
       if (token === true) {
         setBookmark(true);
       }
     });
-    
+
   };
-  
+
   const removeBookmark = (id) => {
     removeWorkoutBookmark(id).then(token => {
-     if (token === true) {
-       setBookmark(false);
-     }
-     
-   });
-   
-   };
+      if (token === true) {
+        setBookmark(false);
+      }
+
+    });
+
+  };
 
   const renderButtonFav = () => {
 
     if (!isBookmark) {
-        return (
-          <IconButton icon="heart-outline" color={'white'} size={24} style={{marginRight: 15}} onPress={() => saveBookmark(item.id, item.title, item.image)}/>
-          )
-      }else{
-        return (
-          <IconButton icon="heart" color={"red"} size={24} style={{marginRight: 15}} onPress={() => removeBookmark(item.id)}/>
-          )
-        }
-      }
+      return (
+        <IconButton icon="heart-outline" color={'white'} size={24} style={{ marginRight: 15 }} onPress={() => saveBookmark(item.id, item.title, item.image)} />
+      )
+    } else {
+      return (
+        <IconButton icon="heart" color={"red"} size={24} style={{ marginRight: 15 }} onPress={() => removeBookmark(item.id)} />
+      )
+    }
+  }
 
-      useEffect(() => {
+  useEffect(() => {
 
-        props.navigation.setOptions({
-          headerRight: () => renderButtonFav(),
-        });
+    props.navigation.setOptions({
+      headerRight: () => renderButtonFav(),
+    });
 
-      }, [isBookmark, item]);
+  }, [isBookmark, item]);
 
   useEffect(() => {
     getWorkoutById(id).then((response) => {
-        setItem(response[0]);
-        setIsLoaded(true);
+      setItem(response[0]);
+      setIsLoaded(true);
     });
   }, []);
 
   if (!isLoaded) {
 
     return (
-   
-        <View style={{marginTop:50}}>
-          <AppLoading/>
-          </View>
-   
-         );
-   
-      }else{
 
- return (
+      <View style={{ marginTop: 50 }}>
+        <AppLoading />
+      </View>
 
-  <ScrollView
-  showsHorizontalScrollIndicator={false}
-  showsVerticalScrollIndicator={false}
->
-    
-<SafeAreaView>
+    );
 
-    <View>
+  } else {
 
-    <ImageBackground source={{uri: item.image}} style={Styles.HeaderImage} resizeMode={'cover'}>
-    <LinearGradient colors={['rgba(0,0,0,0.7)', 'rgba(0,0,0,0.4)']} style={Styles.HeaderGradient}>
+    return (
 
-    <Text style={Styles.HeaderTitle}>{item.title}</Text>
-    <Text style={Styles.HeaderSubTitle}>{item.duration}</Text>
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+      >
 
-    {/* <View style={{flexDirection:'row', marginTop:8}}>
+        <SafeAreaView>
+
+          <View>
+
+            <ImageBackground source={{ uri: !id ? `${IMAGE_URL}/${itemData?.image}` : item.image }} style={Styles.HeaderImage} resizeMode={'cover'}>
+              <LinearGradient colors={['rgba(0,0,0,0.7)', 'rgba(0,0,0,0.4)']} style={Styles.HeaderGradient}>
+
+                <Text style={Styles.HeaderTitle}>{!id ? itemData?.title : item.title}</Text>
+                <Text style={Styles.HeaderSubTitle}>{!id ? itemData?.duration : item.duration}</Text>
+
+                {/* <View style={{flexDirection:'row', marginTop:8}}>
     <LevelRate rate={item.rate} iconsize={22}></LevelRate>
     </View> */}
 
-    </LinearGradient>
-    </ImageBackground>
+              </LinearGradient>
+            </ImageBackground>
 
-    <Grid style={Styles.WorkoutGrid}>
+            <Grid style={Styles.WorkoutGrid}>
 
-      <Col style={Styles.WorkoutGridCol}>
-      {/* <Text style={Styles.WorkoutGridTitle}>{Strings.ST87}</Text>
+              <Col style={Styles.WorkoutGridCol}>
+                {/* <Text style={Styles.WorkoutGridTitle}>{Strings.ST87}</Text>
       <Text style={Styles.WorkoutGridSubTitle}>{item.level}</Text> */}
-      </Col>
+              </Col>
 
-      <Col style={Styles.WorkoutGridCol}>
-      {/* <Text style={Styles.WorkoutGridTitle}>{Strings.ST89}</Text>
+              <Col style={Styles.WorkoutGridCol}>
+                {/* <Text style={Styles.WorkoutGridTitle}>{Strings.ST89}</Text>
       <Text style={Styles.WorkoutGridSubTitle}>{item.goal}</Text> */}
-      </Col>
+              </Col>
 
-    </Grid>
+            </Grid>
 
-    <Days Number={7} WorkoutId={item.id}></Days>
+            <Days Number={7} WorkoutId={item.id}></Days>
 
-    </View>
-    </SafeAreaView>
-    </ScrollView>
+          </View>
+        </SafeAreaView>
+      </ScrollView>
 
-      );
+    );
 
-}
+  }
 
 }
 

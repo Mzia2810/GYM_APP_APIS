@@ -9,10 +9,13 @@ import LanguageContext from '../languages/LanguageContext';
 import Loading from './InnerLoading';
 import { useNavigation } from '@react-navigation/native';
 import ColorsApp from '../config/ColorsApp';
+import { GetAffliateProduct } from '../apis/ApiHandlers';
+import { IMAGE_URL } from '../apis/AxiosInstance';
 
 export default function LatestProducts() {
 
   const [items, setItems] = useState([]);
+  const [data, setData] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   const rightIcon = I18nManager.isRTL ? "chevron-left" : "chevron-right";
@@ -23,15 +26,20 @@ export default function LatestProducts() {
 
   const navigation = useNavigation();
 
-  const onChangeScreen = (id) => {
-    navigation.navigate('productdetails', { id });
+  const onChangeScreen = (item) => {
+    navigation.navigate('productdetails', { item });
   };
 
   useEffect(() => {
-    getLatestProducts().then((response) => {
-      setItems(response);
-      setIsLoaded(true);
+    // getLatestProducts().then((response) => {
+    //   setItems(response);
+    //   setIsLoaded(true);
 
+    // });
+
+    GetAffliateProduct().then((response) => {
+      setData(response?.data?.affliateProducts);
+      setIsLoaded(true);
     });
   }, []);
 
@@ -47,20 +55,20 @@ export default function LatestProducts() {
 
       <View style={{ width: '100%', marginTop: 10, marginLeft: 20 }}>
 
-        {map(items, (item, i) => (
+        {map(data, (item, i) => (
 
-          <TouchableScale key={i} activeOpacity={1} onPress={() => onChangeScreen(item?.id)} activeScale={0.98} tension={100} friction={10}>
+          <TouchableScale key={i} activeOpacity={1} onPress={() => onChangeScreen(item)} activeScale={0.98} tension={100} friction={10}>
             <List.Item
               key={i}
-              title={item.title}
+              title={item?.title}
               titleStyle={{ fontWeight: 'bold', fontSize: 15, marginBottom: 3 }}
               activeOpacity={1}
               titleNumberOfLines={2}
-              description={item.price}
+              description={item?.price}
               descriptionStyle={{ color: ColorsApp.PRIMARY, fontWeight: 'bold', fontSize: 15 }}
               underlayColor="transparent"
               rippleColor="transparent"
-              left={props => <Avatar.Image size={70} style={{ marginRight: 10 }} source={{ uri: item.image }} />}
+              left={props => <Avatar.Image size={70} style={{ marginRight: 10 }} source={{ uri: `${IMAGE_URL}/${item?.image}` }} />}
               right={props => <List.Icon {...props} icon={rightIcon}
                 style={{ alignSelf: 'center', opacity: 0.3, marginBottom: 30 }} />}
             />

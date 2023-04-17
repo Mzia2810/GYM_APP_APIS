@@ -21,16 +21,15 @@ export default function DietDetails(props) {
   const { width } = useWindowDimensions();
   const { route } = props;
   const { navigation } = props;
-  const { id, title, } = route.params;
-  // console.log("🚀 ~ file: DietDetails.js:25 ~ DietDetails ~ id:", id)
+  const { id } = route.params;
 
   const { theme } = usePreferences();
 
-  const [isLoaded, setIsLoaded] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [isBookmark, setBookmark] = useState('');
   const [item, setItem] = useState([]);
   const [data, setData] = useState([]);
-  // console.log("🚀 ~ file: DietDetails.js:33 ~ DietDetails ~ data:", data)
+  console.log("🚀 ~ file: DietDetails.js:33 ~ DietDetails ~ data:", data)
 
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;

@@ -8,6 +8,10 @@ import {
   GET_ALL_EXERCISE,
   GET_ALL_EXERCISES,
   GET_ALL_TAGS,
+  GET_DIET_FAVOURITE,
+  GET_PLANS,
+  GET_PRODUCTS_BY_TYPE,
+  GET_PRODUCT_TYPE,
   GET_SPECIFIC_DIETS,
   LOGIN_URL,
   MY_EXERCISE,
@@ -57,7 +61,7 @@ export const AllCategoryDiets = async () => {
     throw new Error("Failed to get specific diet");
   }
 };
-// specific diets
+//  diets
 export const getSpecificDiet = async (id) => {
   try {
 
@@ -87,12 +91,25 @@ export const setFavouriteDiet = async (userId, dietId) => {
 
     const response = await AxiosInstance.post(`${DIET_FAVOURITE}`, {
       userId: userId,
-      dietId: dietId
+      dietId: dietId,
     });
     return response?.data
   } catch (error) {
     console.error(error);
     throw new Error("Failed to get specific diet");
+  }
+};
+export const getFavouriteDiets = async (userId) => {
+  console.log("🚀 ~ file: ApiHandlers.js:100 ~ getFavouriteDiets ~ userId:", userId)
+  try {
+
+    const response = await AxiosInstance.post(`${GET_DIET_FAVOURITE}`, {
+      userId: '641442d3a09d72d4d2e2411c',
+    });
+    return response?.data
+  } catch (error) {
+    console.error(error);
+    throw new Error("");
   }
 };
 
@@ -181,5 +198,41 @@ export const categoryBlog = async (id) => {
   } catch (error) {
     console.error(error);
     throw new Error("Failed to get specific diet");
+  }
+};
+export const getProductsByType = async (id) => {
+  try {
+
+    const response = await AxiosInstance.post(`${GET_PRODUCTS_BY_TYPE}`, {
+      typeId: id,
+    });
+    return response.data
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get specific diet");
+  }
+};
+export const getProductType = async () => {
+  try {
+    const response = await AxiosInstance.get(`${GET_PRODUCT_TYPE}`);
+    return response;
+
+  } catch (error) {
+    const { response } = error;
+    const { status, data } = response;
+    const message = data.message || "Something went wrong.";
+    throw new Error(message);
+  }
+};
+export const getPlans = async () => {
+  try {
+    const response = await AxiosInstance.get(`${GET_PLANS}`);
+    return response;
+
+  } catch (error) {
+    const { response } = error;
+    const { status, data } = response;
+    const message = data.message || "Something went wrong.";
+    throw new Error(message);
   }
 };

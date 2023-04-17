@@ -48,6 +48,7 @@ export default function Profile(props) {
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [user, setUser] = useState([]);
+  console.log(user)
   const [visible, setVisible] = useState(false);
   const [password, setPassword] = useState("");
 
@@ -105,12 +106,12 @@ export default function Profile(props) {
   // const [email, setEmail] = useState(user.email);
   const handleUpdateEmail = async () => {
     try {
-      updateEmail(auth.currentUser,email).then((response) => {
-        console.log('RESPONSE',response);
+      updateEmail(auth.currentUser, email).then((response) => {
+        console.log('RESPONSE', response);
         console.log('Email updated successfully');
 
-      }).catch(e=>{
-        console.log('ERROR',e);
+      }).catch(e => {
+        console.log('ERROR', e);
       })
       // await firebase.auth().currentUser.updateEmail(email);
     } catch (error) {
@@ -184,7 +185,7 @@ export default function Profile(props) {
               ) : null}
             </View> */}
             <TextInput
-              style={{ backgroundColor: "white",fontSize:16,borderBottomWidth:0, }}
+              style={{ backgroundColor: "white", fontSize: 16, borderBottomWidth: 0, }}
               value={email ? email : user.email}
               onChangeText={(value) => setUser(value)}
               onSubmitEditing={handleUpdateEmail}
