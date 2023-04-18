@@ -10,19 +10,20 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import LevelRate from './LevelRate';
-import { MyExercise } from '../apis/ApiHandlers';
+import { MyExercise, getPlans } from '../apis/ApiHandlers';
+import { IMAGE_URL } from '../apis/AxiosInstance';
 
 export default function LatestWorkouts() {
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [items, setItems] = useState([]);
-  // const [data, setData] = useState([]);
+  const [data, setData] = useState([]);
 
 
   const navigation = useNavigation();
 
-  const onChangeScreen = (id, title) => {
-    navigation.navigate('workoutdetails', { id, title });
+  const onChangeScreen = (itemData) => {
+    navigation.navigate('workoutdetails', { itemData });
   };
 
 
@@ -35,10 +36,14 @@ export default function LatestWorkouts() {
   // },[])
 
   useEffect(() => {
-    getLatestWorkouts().then((response) => {
-      setItems(response);
+    // getLatestWorkouts().then((response) => {
+    //   setItems(response);
+    //   setIsLoaded(true);
+
+    // });
+    getPlans().then((response) => {
+      setData(response?.data?.plan);
       setIsLoaded(true);
-      console.log('')
     });
   }, []);
 
@@ -58,26 +63,23 @@ export default function LatestWorkouts() {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
         >
-          {map(items, (item, i) => (
+          {data.map((item, i) => {
+            return item.workout.map((diet, j) => {
+              return (
+                <TouchableScale key={i} activeOpacity={1} onPress={() => onChangeScreen(item)} activeScale={0.98} tension={100} friction={10}>
+                  <ImageBackground source={{ uri: `${IMAGE_URL}/${diet?.image}` }} style={Styles.card1_background} imageStyle={{ borderRadius: 8 }}>
+                    <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']} style={Styles.card1_gradient}>
+                      <Text numberOfLines={2} style={Styles.card3_title}>{diet?.title}</Text>
+                      <Text numberOfLines={2} style={Styles.card3_subtitle}>{diet?.duration}</Text>
 
-            <TouchableScale key={i} activeOpacity={1} onPress={() => onChangeScreen(item.id, item.title)} activeScale={0.98} tension={100} friction={10}>
-              <ImageBackground source={{ uri: item.image }} style={Styles.card1_background} imageStyle={{ borderRadius: 8 }}>
-                <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']} style={Styles.card1_gradient}>
-
-                  {/*item.price === "premium" ? <View style={Styles.card1_viewicon}><Icon name="lock" style={Styles.card1_icon}/></View> : null */}
-
-                  {/* {item.rate ? <View style={[Styles.card1_viewicon, {flexDirection:'row'}]}><LevelRate rate={item.rate}/></View> : null} */}
-
-                  <Paragraph style={Styles.card1_subtitle}>{item.level}</Paragraph>
-                  <Text numberOfLines={2} style={Styles.card1_title}>{item.title}</Text>
-
-                </LinearGradient>
-              </ImageBackground>
-            </TouchableScale>
-
-          ))}
+                    </LinearGradient>
+                  </ImageBackground>
+                </TouchableScale>
+              );
+            });
+          })}
         </ScrollView>
-      </View>
+      </View >
     );
   }
 

@@ -85,7 +85,7 @@ export const getSpecificCategoryData = async (id) => {
     throw new Error("Failed to get specific diet");
   }
 };
-export const setFavouriteDiet = async (userId, dietId) => {
+export const favouriteDiet = async (userId, dietId) => {
   try {
 
     const response = await AxiosInstance.post(`${DIET_FAVOURITE}`, {
@@ -99,11 +99,10 @@ export const setFavouriteDiet = async (userId, dietId) => {
   }
 };
 export const getFavouriteDiets = async (userId) => {
-  console.log("🚀 ~ file: ApiHandlers.js:100 ~ getFavouriteDiets ~ userId:", userId)
   try {
 
     const response = await AxiosInstance.post(`${GET_DIET_FAVOURITE}`, {
-      userId: '641442d3a09d72d4d2e2411c',
+      userId: userId,
     });
     return response?.data
   } catch (error) {

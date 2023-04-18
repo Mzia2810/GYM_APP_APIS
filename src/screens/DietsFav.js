@@ -11,13 +11,20 @@ import NoContentFound from '../components/NoContentFound';
 import TouchableScale from 'react-native-touchable-scale';
 import { List, Avatar } from 'react-native-paper';
 import { IMAGE_URL } from '../apis/AxiosInstance';
+import {
+  getAuth,
 
+} from "firebase/auth";
 export default function DietsFav(props) {
+  const auth = getAuth();
+
+  const [user, setUser] = useState([]);
+  console.log("🚀 ~ file: DietsFav.js:22 ~ DietsFav ~ user:", user)
+
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [items, setItems] = useState([]);
   const [data, setData] = useState([]);
-  console.log("🚀 ~ file: DietsFav.js:19 ~ DietsFav ~ data:", data)
 
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
@@ -30,7 +37,7 @@ export default function DietsFav(props) {
   };
 
   useEffect(() => {
-    getFavouriteDiets('WRD1ua5X90VmSMopPt0iUGdpKiZ2')
+    getFavouriteDiets('641442d3a09d72d4d2e2411c')
       .then((response) => {
         setData(response?.arr);
         setIsLoaded(true);
@@ -40,7 +47,9 @@ export default function DietsFav(props) {
     //   setIsLoaded(true);
     // });
   }, []);
-
+  useEffect(() => {
+    setUser(auth.currentUser.uid);
+  }, []);
   if (!isLoaded) {
 
     return (

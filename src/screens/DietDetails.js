@@ -13,23 +13,30 @@ import { HTMLStyles } from '../config/HTMLStyles';
 import { HTMLStylesDark } from '../config/HTMLStylesDark';
 import HTMLView from 'react-native-render-html';
 import usePreferences from '../hooks/usePreferences';
-import { getSpecificDiet } from '../apis/ApiHandlers';
+import { favouriteDiet, getSpecificDiet, setFavouriteDiet } from '../apis/ApiHandlers';
 import { IMAGE_URL } from '../apis/AxiosInstance';
+import {
+  getAuth,
 
+} from "firebase/auth";
 export default function DietDetails(props) {
+  const auth = getAuth();
+
+  const [user, setUser] = useState([]);
+  console.log("🚀 ~ file: DietsFav.js:22 ~ DietsFav ~ user:", user)
 
   const { width } = useWindowDimensions();
   const { route } = props;
   const { navigation } = props;
   const { id } = route.params;
+  console.log("🚀 ~ file: DietDetails.js:25 ~ DietDetails ~ id:", id)
 
   const { theme } = usePreferences();
 
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [isBookmark, setBookmark] = useState('');
   const [item, setItem] = useState([]);
   const [data, setData] = useState([]);
-  console.log("🚀 ~ file: DietDetails.js:33 ~ DietDetails ~ data:", data)
 
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
@@ -56,8 +63,11 @@ export default function DietDetails(props) {
 
   useEffect(() => {
     renderBookMark(id);
-  }, []);
 
+  }, []);
+  useEffect(() => {
+    setUser(auth.currentUser.uid);
+  }, []);
   const saveBookmark = (id) => {
 
     let data = { id, };
@@ -67,6 +77,10 @@ export default function DietDetails(props) {
         setBookmark(true);
       }
     });
+    favouriteDiet('641442d3a09d72d4d2e2411c', id)
+      .then((response) => {
+        setItem(response?.arr);
+      });
 
   };
 
@@ -108,25 +122,25 @@ export default function DietDetails(props) {
   useEffect(() => {
     // getDietById(id).then((response) => {
     //   setItem(response[0]);
-    //   setIsLoaded(true);
+    //   setLoading(true);
     // });
     getSpecificDiet(id)
       .then(res => setData(res?.data))
-      .catch(error => console.error(error));
-    setIsLoaded(true)
+    setLoading(true)
   }, []);
 
-  if (!isLoaded) {
+  if (loading === false) {
 
     return (
 
-      <View style={{ marginTop: 50 }}>
-        <AppLoading />
-      </View>
+      // <View style={{ marginTop: 50 }}>
+      <AppLoading />
+      // </View>
 
     );
 
-  } else {
+  }
+  else {
 
     return (
 
