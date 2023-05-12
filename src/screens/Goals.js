@@ -8,6 +8,8 @@ import TouchableScale from 'react-native-touchable-scale';
 import { Text, IconButton } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import LoadMoreButton from '../components/LoadMoreButton';
+import { GetExerciseDrawerBodyParts } from '../apis/ApiHandlers';
+import { IMAGE_URL } from '../apis/AxiosInstance';
 
 export default function Goals(props) {
 
@@ -17,6 +19,7 @@ export default function Goals(props) {
   const [items, setItems] = useState([]);
   const [showButton, setshowButton] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [data, setData] = useState(false);
 
   const onChangeScreen = (screen) => {
     navigation.navigate(screen);
@@ -26,42 +29,42 @@ export default function Goals(props) {
     navigation.navigate('singlegoal', { id, title });
   };
 
-  const loadMore = () => {
+  // const loadMore = () => {
 
-    setLoading(true);
-    setPage(page + 1);
+  //   setLoading(true);
+  //   setPage(page + 1);
 
-    getGoals(page + 1).then((response) => {
+  //   getGoals(page + 1).then((response) => {
 
-      if (!items) {
-        setItems(response);
-        setLoading(false);
-      } else {
-        setItems([...items, ...response]);
-        setLoading(false);
-      }
+  //     if (!items) {
+  //       setItems(response);
+  //       setLoading(false);
+  //     } else {
+  //       setItems([...items, ...response]);
+  //       setLoading(false);
+  //     }
 
-      if (response.length <= 0) {
-        setshowButton(false);
-      }
+  //     if (response.length <= 0) {
+  //       setshowButton(false);
+  //     }
 
-      setIsLoaded(true);
+  //     setIsLoaded(true);
 
-    });
+  //   });
 
-  };
+  // };
 
-  const renderButton = () => {
+  // const renderButton = () => {
 
-    return (
-      <LoadMoreButton
-        Indicator={loading}
-        showButton={showButton}
-        Items={items}
-        Num={5}
-        Click={() => loadMore()} />
-    )
-  }
+  //   return (
+  //     <LoadMoreButton
+  //       Indicator={loading}
+  //       showButton={showButton}
+  //       Items={items}
+  //       Num={5}
+  //       Click={() => loadMore()} />
+  //   )
+  // }
 
   const buttonSearch = () => {
     return (
@@ -83,7 +86,18 @@ export default function Goals(props) {
       setIsLoaded(true);
     });
   }, []);
-
+  useEffect(() => {
+    setIsLoaded(false);
+    GetExerciseDrawerBodyParts()
+      .then((response) => {
+        setData(response?.data?.data);
+      });
+    // MyExercise().then((response) => {
+    //   setData(response.data.data);
+    //   setIsLoaded(true);
+    // });
+    setIsLoaded(true);
+  }, []);
   if (!isLoaded) {
 
     return (
@@ -105,10 +119,10 @@ export default function Goals(props) {
 
           <View style={Styles.ContentScreen}>
 
-            {map(items, (item, i) => (
+            {map(data, (item, i) => (
 
-              <TouchableScale key={i} activeOpacity={1} onPress={() => onClickItem(item.id, item.title)} activeScale={0.98} tension={100} friction={10}>
-                <ImageBackground source={{ uri: item.image }} style={Styles.background_categories} imageStyle={{ borderRadius: 8 }}>
+              <TouchableScale key={i} activeOpacity={1} onPress={() => onClickItem(item._id, item.title)} activeScale={0.98} tension={100} friction={10}>
+                <ImageBackground source={{ uri: `${IMAGE_URL}/${item.image}` }} style={Styles.background_categories} imageStyle={{ borderRadius: 8 }}>
                   <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']} style={Styles.gradient_categories}>
                     <View style={Styles.title_categories_border}></View>
                     <LinearGradient colors={['rgba(0,0,0,0.5)', 'rgba(0,0,0,0.5)']} style={Styles.title_categories_background}>
@@ -120,7 +134,7 @@ export default function Goals(props) {
 
             ))}
 
-            {renderButton()}
+            {/* {renderButton()} */}
 
           </View>
         </SafeAreaView>

@@ -11,6 +11,7 @@ import { map } from 'lodash';
 import ColorsApp from '../config/ColorsApp';
 import { AllCategoryDiets } from '../apis/ApiHandlers';
 import { IMAGE_URL } from '../apis/AxiosInstance';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Categories(props) {
 
@@ -26,7 +27,7 @@ export default function Categories(props) {
   const rightIcon = I18nManager.isRTL ? "chevron-left" : "chevron-right";
 
   const onClickItem = (id, title) => {
-    props.navigation.navigate('singlecategory', { id, title });
+    props.navigation.navigate('singlecategory', { id, title, });
   };
 
   // useEffect(() => {

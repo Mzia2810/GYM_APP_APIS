@@ -13,6 +13,8 @@ import LevelRate from './LevelRate';
 import { MyExercise, getPlans } from '../apis/ApiHandlers';
 import { IMAGE_URL } from '../apis/AxiosInstance';
 
+import NoContentFound from '../components/NoContentFound';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function LatestWorkouts() {
 
   const [isLoaded, setIsLoaded] = useState(false);
@@ -27,13 +29,16 @@ export default function LatestWorkouts() {
   };
 
 
-  // useEffect(() =>{
-  //   MyExercise().then((response) => {
-  //     setData(response);
-  //     setIsLoaded(true)
-  //   // console.log('This is my new api =======>  :',response.data)
-  //   })
-  // },[])
+  useEffect(async () => {
+    // MyExercise().then((response) => {
+    //   setData(response);
+    //   setIsLoaded(true)
+    // // console.log('This is my new api =======>  :',response.data)
+    // })
+    const token = await AsyncStorage.getItem('@token')
+    console.log("🚀 ~ file: LatestWorkouts.js:38 ~ useEffect ~ token:", token)
+
+  }, [])
 
   useEffect(() => {
     // getLatestWorkouts().then((response) => {
@@ -63,21 +68,24 @@ export default function LatestWorkouts() {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
         >
-          {data.map((item, i) => {
-            return item.workout.map((diet, j) => {
-              return (
-                <TouchableScale key={i} activeOpacity={1} onPress={() => onChangeScreen(item)} activeScale={0.98} tension={100} friction={10}>
-                  <ImageBackground source={{ uri: `${IMAGE_URL}/${diet?.image}` }} style={Styles.card1_background} imageStyle={{ borderRadius: 8 }}>
-                    <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']} style={Styles.card1_gradient}>
-                      <Text numberOfLines={2} style={Styles.card3_title}>{diet?.title}</Text>
-                      <Text numberOfLines={2} style={Styles.card3_subtitle}>{diet?.duration}</Text>
+          <View>
+            {data.map((item, i) => {
+              return item.workout.map((diet, j) => {
+                return (
+                  <TouchableScale key={i} activeOpacity={1} onPress={() => onChangeScreen(item)} activeScale={0.98} tension={100} friction={10}>
+                    <ImageBackground source={{ uri: `${IMAGE_URL}/${diet?.image}` }} style={Styles.card1_background} imageStyle={{ borderRadius: 8 }}>
+                      <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']} style={Styles.card1_gradient}>
+                        <Text numberOfLines={2} style={Styles.card3_title}>{diet?.title}</Text>
+                        <Text numberOfLines={2} style={Styles.card3_subtitle}>{diet?.duration}</Text>
 
-                    </LinearGradient>
-                  </ImageBackground>
-                </TouchableScale>
-              );
-            });
-          })}
+                      </LinearGradient>
+                    </ImageBackground>
+                  </TouchableScale>
+                );
+              });
+            })}
+            <NoContentFound data={data} left={'45%'} />
+          </View>
         </ScrollView>
       </View >
     );

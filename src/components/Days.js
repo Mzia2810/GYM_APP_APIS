@@ -17,7 +17,8 @@ export default function Days(props) {
     const language = contextState.language;
     const Strings = Languages[language].texts;
 
-    const { Number, WorkoutId } = props;
+    const { Number, WorkoutId, itemData } = props;
+    console.log("🚀 ~ file: Days.js:21 ~ Days ~ itemData:", itemData)
 
     const rightIcon = I18nManager.isRTL ? "chevron-left" : "chevron-right";
 

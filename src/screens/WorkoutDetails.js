@@ -18,7 +18,6 @@ export default function WorkoutDetails(props) {
   const { route } = props;
   const { navigation } = props;
   const { id = 0, title, itemData } = route.params;
-  console.log("🚀 ~ file: WorkoutDetails.js:20 ~ WorkoutDetails ~ itemData:", itemData)
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [isBookmark, setBookmark] = useState('');
@@ -124,15 +123,15 @@ export default function WorkoutDetails(props) {
 
           <View>
 
-            <ImageBackground source={{ uri: !id ? `${IMAGE_URL}/${itemData?.image}` : item.image }} style={Styles.HeaderImage} resizeMode={'cover'}>
+            <ImageBackground source={{ uri: itemData ? `${IMAGE_URL}/${itemData[0]?.image}` : item.image }} style={Styles.HeaderImage} resizeMode={'cover'}>
               <LinearGradient colors={['rgba(0,0,0,0.7)', 'rgba(0,0,0,0.4)']} style={Styles.HeaderGradient}>
 
-                <Text style={Styles.HeaderTitle}>{!id ? itemData?.title : item.title}</Text>
-                <Text style={Styles.HeaderSubTitle}>{!id ? itemData?.duration : item.duration}</Text>
+                <Text style={Styles.HeaderTitle}>{itemData ? itemData[0]?.title : item.title}</Text>
+                <Text style={Styles.HeaderSubTitle}>{itemData ? itemData[0]?.duration : item.duration}</Text>
 
-                {/* <View style={{flexDirection:'row', marginTop:8}}>
-    <LevelRate rate={item.rate} iconsize={22}></LevelRate>
-    </View> */}
+                {/* <View style={{ flexDirection: 'row', marginTop: 8 }}>
+                  <LevelRate rate={item.rate} iconsize={22}></LevelRate>
+                </View> */}
 
               </LinearGradient>
             </ImageBackground>
@@ -140,18 +139,18 @@ export default function WorkoutDetails(props) {
             <Grid style={Styles.WorkoutGrid}>
 
               <Col style={Styles.WorkoutGridCol}>
-                {/* <Text style={Styles.WorkoutGridTitle}>{Strings.ST87}</Text>
-      <Text style={Styles.WorkoutGridSubTitle}>{item.level}</Text> */}
+                {/* <Text style={Styles.WorkoutGridTitle}>{Strings.ST87}</Text> */}
+                {/* <Text style={Styles.WorkoutGridSubTitle}>{item.level}</Text> */}
               </Col>
 
               <Col style={Styles.WorkoutGridCol}>
-                {/* <Text style={Styles.WorkoutGridTitle}>{Strings.ST89}</Text>
-      <Text style={Styles.WorkoutGridSubTitle}>{item.goal}</Text> */}
+                {/* <Text style={Styles.WorkoutGridTitle}>{Strings.ST89}</Text> */}
+                {/* <Text style={Styles.WorkoutGridSubTitle}>{item.goal}</Text> */}
               </Col>
 
             </Grid>
 
-            <Days Number={7} WorkoutId={item.id}></Days>
+            <Days Number={7} WorkoutId={item.id} itemData={itemData} />
 
           </View>
         </SafeAreaView>

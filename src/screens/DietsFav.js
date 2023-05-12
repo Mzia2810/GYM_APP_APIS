@@ -11,20 +11,23 @@ import NoContentFound from '../components/NoContentFound';
 import TouchableScale from 'react-native-touchable-scale';
 import { List, Avatar } from 'react-native-paper';
 import { IMAGE_URL } from '../apis/AxiosInstance';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   getAuth,
 
 } from "firebase/auth";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function DietsFav(props) {
   const auth = getAuth();
 
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState({});
   console.log("🚀 ~ file: DietsFav.js:22 ~ DietsFav ~ user:", user)
 
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [items, setItems] = useState([]);
   const [data, setData] = useState([]);
+  console.log("🚀 ~ file: DietsFav.js:29 ~ DietsFav ~ data:", data)
 
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
@@ -33,24 +36,60 @@ export default function DietsFav(props) {
   const rightIcon = I18nManager.isRTL ? "chevron-left" : "chevron-right";
 
   const onClickItem = (id, title) => {
-    props.navigation.navigate('dietdetails', { id, title });
+    props.navigation.navigate('dietdetails', { id, title, user: user?.id });
   };
 
-  useEffect(() => {
-    getFavouriteDiets('641442d3a09d72d4d2e2411c')
-      .then((response) => {
-        setData(response?.arr);
+
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     const favouriteData = () => {
+  //       alert('favData')
+  //       setIsLoaded(true);
+  //       (async () => {
+  //         AsyncStorage.getItem("@user").then((value) => {
+  //           if (value !== null) {
+  //             setUser(JSON.parse(value));
+  //             let res = getFavouriteDiets(user?.id).than({
+
+  //             })
+  //             console.log("🚀 ~ file: DietsFav.js:49 ~ useEffect ~ res:", res?.arr)
+  //             setData(res?.arr);
+  //           }
+  //         });
+  //         console.log("🚀 ~ file: DietsFav.js:50 ~ user:", user?.id)
+
+  //       })();
+  //       setIsLoaded(false);
+  //     }
+  //     favouriteData()
+  //   }, [])
+  // );
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const favouriteData = async () => {
         setIsLoaded(true);
-      });
-    // getFavDiets().then((response) => {
-    //   setItems(response);
-    //   setIsLoaded(true);
-    // });
-  }, []);
-  useEffect(() => {
-    setUser(auth.currentUser.uid);
-  }, []);
-  if (!isLoaded) {
+        try {
+          const value = await AsyncStorage.getItem("@user");
+          if (value !== null) {
+            const user = JSON.parse(value);
+            setUser(user)
+            console.log("🚀 ~ file: DietsFav.js:50 ~ user:", user?.id);
+            let res = await getFavouriteDiets(user?.id);
+            console.log("🚀 ~ file: DietsFav.js:49 ~ useEffect ~ res:", res?.arr);
+            setData(res?.arr);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+        setIsLoaded(false);
+      };
+      favouriteData();
+    }, [])
+  );
+
+
+  if (isLoaded) {
 
     return (
 

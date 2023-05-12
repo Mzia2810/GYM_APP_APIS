@@ -71,38 +71,21 @@ const App = () => {
   const [loaded, setLoaded] = useState(false);
   const [language, setLanguage] = useState(ConfigApp.DEFAULTLANG);
 
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
-    AsyncStorage.setItem("themeSetting", theme);
-  };
-
-  const preference = useMemo(
-    () => ({
-      toggleTheme,
-      theme,
-    }),
-    [theme]
-  );
-
-  const updateValue = (lang) => {
-    setLanguage(lang);
-    AsyncStorage.setItem("language", lang);
-  };
 
   useEffect(() => {
-    async function checkUser() {
-      onAuthStateChanged(auth, (user) => {
-        if (user !== null) {
+    (async () => {
+      await AsyncStorage.getItem("@token").then((token) => {
+        if (token) {
           setIsLogged(true);
           setLoaded(true);
-        } else {
+        }
+        else {
           setIsLogged(false);
           setLoaded(true);
         }
       });
-    }
 
-    checkUser();
+    })();
   }, []);
 
   useEffect(() => {
@@ -134,6 +117,28 @@ const App = () => {
       moment.locale("en");
     }
   }, [language]);
+
+
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+    AsyncStorage.setItem("themeSetting", theme);
+  };
+
+  const preference = useMemo(
+    () => ({
+      toggleTheme,
+      theme,
+    }),
+    [theme]
+  );
+
+  const updateValue = (lang) => {
+    setLanguage(lang);
+    AsyncStorage.setItem("language", lang);
+  };
+
+
+
 
   if (!isReady) {
     return (
@@ -169,6 +174,7 @@ const App = () => {
                 theme={theme === "dark" ? DarkThemeNav : DefaultThemeNav}
               >
                 {isLogged ? <DrawerNavigation /> : <GuestNavigation />}
+                {/* <DrawerNavigation /> */}
               </NavigationContainer>
             </PaperProvider>
             {/* </FavouriteProvider.Provider> */}

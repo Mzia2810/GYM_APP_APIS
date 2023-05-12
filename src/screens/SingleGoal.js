@@ -13,13 +13,15 @@ import LevelRate from "../components/LevelRate";
 import LoadMoreButton from "../components/LoadMoreButton";
 import NoContentFound from "../components/NoContentFound";
 import { GET_ALL_EXERCISE } from "../apis/ApisEndPoints";
-import AxiosInstance from "../apis/AxiosInstance";
+import AxiosInstance, { IMAGE_URL } from "../apis/AxiosInstance";
+import { GetDrawerExercise } from "../apis/ApiHandlers";
 
 export default function SingleGoal(props) {
   const { route } = props;
   const { navigation } = props;
   const { id, title } = route.params;
-  const { allExerciseData} = route.params;
+  const [allExerciseData, setAllExerciseData] = useState([]);
+  console.log("🚀 ~ file: SingleGoal.js:24 ~ SingleGoal ~ allExerciseData:", allExerciseData)
 
   // console.log('allExerciseData ============= SingleGoal ====== > : ',allExerciseData)
 
@@ -72,7 +74,18 @@ export default function SingleGoal(props) {
       setIsLoaded(true);
     });
   };
-
+  useEffect(() => {
+    setIsLoaded(false);
+    GetDrawerExercise(id)
+      .then((response) => {
+        setAllExerciseData(response?.data?.exercises);
+      });
+    // MyExercise().then((response) => {
+    //   setData(response.data.data);
+    //   setIsLoaded(true);
+    // });
+    setIsLoaded(true);
+  }, []);
   const renderButton = () => {
     return (
       <LoadMoreButton
@@ -85,22 +98,6 @@ export default function SingleGoal(props) {
     );
   };
 
-  
-  // const Get_All_Exercise = async (_id) => {
-  //   try {
-  //     let data = JSON.stringify({
-  //       _id
-  //     });
-  //     const result = await AxiosInstance.post(`${GET_ALL_EXERCISE}`, data);
-  //     if (result.status >= 200 && result.status < 300) {
-  //       setAllExerciseData(result.data)
-        
-  //       console.log('this is my all exercises ====>  ',result.data);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error during All Exercise ==>:", error);
-  //   }
-  // };
 
   useEffect(() => {
     props.navigation.setOptions({
@@ -127,44 +124,44 @@ export default function SingleGoal(props) {
         <SafeAreaView>
           <View style={Styles.ContentScreen}>
             {map(allExerciseData, (item, i) => {
-              console.log('Item ki img =====  >  ',item)
-              return(
-              <TouchableScale
-                key={item.id}
-                activeOpacity={1}
-                onPress={() => onClickItem(item.id, item.title)}
-                activeScale={0.98}
-                tension={100}
-                friction={10}
-              >
-                <ImageBackground
-                  source={{ uri: item.image }}
-                  style={Styles.card3_background}
-                  imageStyle={{ borderRadius: 8 }}
+              console.log('Item ki img =====  >  ', item)
+              return (
+                <TouchableScale
+                  key={item?._id}
+                  activeOpacity={1}
+                  onPress={() => onClickItem(item?.id, item?.title)}
+                  activeScale={0.98}
+                  tension={100}
+                  friction={10}
                 >
-                  <LinearGradient
-                    colors={["rgba(0,0,0,0.1)", "rgba(0,0,0,0.7)"]}
-                    style={Styles.card3_gradient}
+                  <ImageBackground
+                    source={{ uri: `${IMAGE_URL}/${item?.image}` }}
+                    style={Styles.card3_background}
+                    imageStyle={{ borderRadius: 8 }}
                   >
-                    {/* <View style={Styles.card3_viewicon}>
-        {item.rate ? <LevelRate rate={item.rate}/> : null}
+                    <LinearGradient
+                      colors={["rgba(0,0,0,0.1)", "rgba(0,0,0,0.7)"]}
+                      style={Styles.card3_gradient}
+                    >
+                      {/* <View style={Styles.card3_viewicon}>
+        {item?.rate ? <LevelRate rate={item?.rate}/> : null}
       </View> */}
 
-                    <Text numberOfLines={2} style={Styles.card3_title}>
-                      {item.title}
-                    </Text>
-                    <Text numberOfLines={2} style={Styles.card3_subtitle}>
-                      {item.duration}
-                    </Text>
-                  </LinearGradient>
-                </ImageBackground>
-              </TouchableScale>
+                      <Text numberOfLines={2} style={Styles.card3_title}>
+                        {item?.title}
+                      </Text>
+                      <Text numberOfLines={2} style={Styles.card3_subtitle}>
+                        {item?.duration}
+                      </Text>
+                    </LinearGradient>
+                  </ImageBackground>
+                </TouchableScale>
               )
-    })}
+            })}
 
             {renderButton()}
 
-            <NoContentFound data={items} />
+            <NoContentFound data={allExerciseData} />
           </View>
         </SafeAreaView>
       </ScrollView>

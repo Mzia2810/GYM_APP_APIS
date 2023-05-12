@@ -13,6 +13,7 @@ import LoadMoreButton from '../components/LoadMoreButton';
 import { Grid, Col } from 'react-native-easy-grid';
 import { AllCategoryDiets, GetAllDiets } from '../apis/ApiHandlers';
 import { IMAGE_URL } from '../apis/AxiosInstance';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Diets(props) {
 
@@ -23,6 +24,7 @@ export default function Diets(props) {
   console.log("🚀 ~ file: Diets.js:22 ~ Diets ~ data:", data)
   const [showButton, setshowButton] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState({});
 
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
@@ -33,7 +35,7 @@ export default function Diets(props) {
   };
 
   const onClickItem = (id, title) => {
-    props.navigation.navigate('dietdetails', { id, title });
+    props.navigation.navigate('dietdetails', { id, title, user: user?.id });
   };
 
   const loadMore = () => {
@@ -84,6 +86,11 @@ export default function Diets(props) {
     //   .then(res => setData(res.data))
     //   .catch(error => console.error(error));
     // setIsLoaded(true);
+    AsyncStorage.getItem("@user").then((value) => {
+      if (value !== null) {
+        setUser(JSON.parse(value));
+      }
+    });
     GetAllDiets().then((response) => {
       setData(response?.data?.diets);
       setIsLoaded(true);

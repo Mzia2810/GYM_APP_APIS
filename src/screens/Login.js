@@ -12,10 +12,9 @@ import Languages from "../languages";
 import LanguageContext from "../languages/LanguageContext";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import usePreferences from "../hooks/usePreferences";
-import { loginUser } from "../apis/ApiHandlers";
-import AxiosInstance from "../apis/AxiosInstance";
-import { LOGIN_URL } from "../apis/ApisEndPoints";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { logInUser } from "../apis/ApiHandlers";
+import { useNavigation } from "@react-navigation/native";
 
 const auth = getAuth();
 
@@ -23,6 +22,8 @@ const auth = getAuth();
 
 export default function Login(props) {
   const contextState = React.useContext(LanguageContext);
+  const { reset } = useNavigation();
+
   const language = contextState.language;
   const Strings = Languages[language].texts;
   const { theme, toggleTheme } = usePreferences();
@@ -35,61 +36,65 @@ export default function Login(props) {
   console.log(password);
 
   const onChangeScreen = (screen) => {
-    props.navigation.navigate({
-      screen:screen
-    });
+    props.navigation.navigate(screen);
   };
 
   //dummy
-  const loginUser = async () => {
+  const login = async () => {
     try {
-      let data = JSON.stringify({
-        email,
-        password,
+      setLoading(true)
+      await AsyncStorage.clear();
+      const res = await logInUser(email, password)
+      console.log("🚀 ~ file: Login.js:45 ~ login ~ res:", res?.success)
+      console.log("🚀 ~ file: Login.js:45 ~ login ~ res:", res?.user)
+      console.log("🚀 ~ file: Login.js:45 ~ login ~ res:", res?.user?.token)
+      await AsyncStorage.setItem("@token", res?.user?.token);
+      await AsyncStorage.setItem("@user", JSON.stringify(res?.user));
+      setEmail('')
+      setPassword('')
+      setLoading(false)
+      // props.navigation.replace('home');
+      reset({
+        index: 0,
+        routes: [{ name: 'home' }],
       });
-      const result = await AxiosInstance.post(`${LOGIN_URL}`, data);
-      if (result.status >= 200 && result.status < 300) {
-        //also do om login api
-        await AsyncStorage.setItem("@token", result?.data?.user?.token || "");
-        
-        console.log("result", result.status);
-        console.log('this is my login ====>  ',result.data);
-        onChangeScreen("home");
-      }
-    } catch (error) {
-      console.error("Error during login:", error);
+      // onChangeScreen("StackNavigation");
     }
+    catch (error) {
+      console.log("🚀 ~ file: Login.js:53 ~ login ~ error:", error)
+
+    }
+
   };
   //end
-  const login = async () => {
-    setLoading(true);
+  // const login = async () => {
+  //   setLoading(true);
 
-    if ((email, password)) {
-      await signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          // console.log('Here is my email ::',email,password)
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          if (errorCode === "auth/wrong-password") {
-            setLoading(false);
-            Alert.alert(Strings.ST113);
-          } else if (errorCode === "auth/user-not-found") {
-            setLoading(false);
-            Alert.alert(Strings.ST37);
-          } else {
-            setLoading(false);
-            Alert.alert(Strings.ST33);
-          }
-        });
-    } else {
-      setLoading(false);
-      Alert.alert(Strings.ST33);
-    }
-  };
+  //   if ((email, password)) {
+  //     await signInWithEmailAndPassword(auth, email, password)
+  //       .then(() => {
+  //       })
+  //       .catch((error) => {
+  //         const errorCode = error.code;
+  //         const errorMessage = error.message;
+  //         if (errorCode === "auth/wrong-password") {
+  //           setLoading(false);
+  //           Alert.alert(Strings.ST113);
+  //         } else if (errorCode === "auth/user-not-found") {
+  //           setLoading(false);
+  //           Alert.alert(Strings.ST37);
+  //         } else {
+  //           setLoading(false);
+  //           Alert.alert(Strings.ST33);
+  //         }
+  //       });
+  //   } else {
+  //     setLoading(false);
+  //     Alert.alert(Strings.ST33);
+  //   }
+  // };
 
- 
+
 
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: "center" }}>

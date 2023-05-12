@@ -13,7 +13,8 @@ import { HTMLStyles } from '../config/HTMLStyles';
 import { HTMLStylesDark } from '../config/HTMLStylesDark';
 import HTMLView from 'react-native-render-html';
 import usePreferences from '../hooks/usePreferences';
-import { favouriteDiet, getSpecificDiet, setFavouriteDiet } from '../apis/ApiHandlers';
+import { useFocusEffect } from '@react-navigation/native';
+import { favouriteDiet, getFavouriteDiets, getSpecificDiet, setFavouriteDiet } from '../apis/ApiHandlers';
 import { IMAGE_URL } from '../apis/AxiosInstance';
 import {
   getAuth,
@@ -22,114 +23,112 @@ import {
 export default function DietDetails(props) {
   const auth = getAuth();
 
-  const [user, setUser] = useState([]);
-  console.log("🚀 ~ file: DietsFav.js:22 ~ DietsFav ~ user:", user)
+  console.log("🚀 ~ file: DietDetails.js:26 ~ DietDetails ~ user:", user)
 
   const { width } = useWindowDimensions();
   const { route } = props;
-  const { navigation } = props;
-  const { id } = route.params;
-  console.log("🚀 ~ file: DietDetails.js:25 ~ DietDetails ~ id:", id)
+  const { id, user } = route.params;
+  console.log("🚀 ~ file: DietDetails.js:32 ~ DietDetails ~ user:", user)
+  console.log("🚀 ~ file: DietDetails.js:32 ~ DietDetails ~ id:", id)
 
   const { theme } = usePreferences();
 
   const [loading, setLoading] = useState(false);
-  const [isBookmark, setBookmark] = useState('');
-  const [item, setItem] = useState([]);
+  const [isBookmark, setBookmark] = useState(false);
+  console.log("🚀 ~ file: DietDetails.js:38 ~ DietDetails ~ isBookmark:", isBookmark)
+  const [item, setItem] = useState();
   const [data, setData] = useState([]);
+  console.log("🚀 ~ file: DietDetails.js:39 ~ DietDetails ~ data:", data)
 
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
   const Strings = Languages[language].texts;
 
-  const renderBookMark = async (id) => {
-    await AsyncStorage.getItem('dietsFav').then(token => {
-      const res = JSON.parse(token);
 
-      if (res !== null) {
-        let data = res.find(value => value.id === id);
+  useFocusEffect(
+    React.useCallback(() => {
+      setLoading(true)
 
-        if (data !== null) {
-          let data = res.find(value => value.id === id);
-          return data == null ? setBookmark(false) : setBookmark(true);
-        }
 
-      } else {
-        return false;
-      }
+      getSpecificDiet(id, user)
+        .then(res => {
+          setData(res?.data)
+          setBookmark(data?.isFavorite)
+        })
+      props.navigation.setOptions({
+        headerRight: () => renderButtonFav()
+      });
+      setLoading(false)
+    }, [isBookmark])
+  );
 
-    });
-  };
+  // useEffect(() => {
+  //   // getDietById(id).then((response) => {
+  //   //   setItem(response[0]);
+  //   //   setLoading(true);
+  //   // });
 
-  useEffect(() => {
-    renderBookMark(id);
+  // }, []);
 
-  }, []);
-  useEffect(() => {
-    setUser(auth.currentUser.uid);
-  }, []);
-  const saveBookmark = (id) => {
 
-    let data = { id, };
+  const saveBookmark = () => {
+
     setBookmark(true);
-    setDietBookmark(data).then(token => {
-      if (token === true) {
-        setBookmark(true);
-      }
-    });
-    favouriteDiet('641442d3a09d72d4d2e2411c', id)
+
+    favouriteDiet(user, id)
       .then((response) => {
         setItem(response?.arr);
-      });
+        console.log("Response====", response)
 
+      }).catch((error) => {
+        console.log("🚀 ~ file: DietDetails.js:113 ~ .then ~ error:", error)
+
+        // setData(response?.arr);
+      });
+    getFavouriteDiets(user).then((res) => {
+      console.log("🚀 ~ file: DietDetails.js:93 ~ getFavouriteDiets ~ res:", res?.data)
+
+    })
   };
 
-  const removeBookmark = (id) => {
-    removeDietBookmark(id).then(token => {
-      if (token === true) {
-        setBookmark(false);
-      }
+  const removeBookmark = () => {
 
-    });
+    setBookmark(false);
+    favouriteDiet(user, id)
+      .then((response) => {
+        setItem(response?.arr);
+        console.log("Response====", response)
 
+      }).catch((error) => {
+        console.log("🚀 ~ file: DietDetails.js:131 ~ .then ~ error:", error)
+      });
+
+    getFavouriteDiets(user).then((res) => {
+      console.log("🚀 ~ file: DietDetails.js:93 ~ getFavouriteDiets ~ res:", res)
+
+    })
   };
 
   const renderButtonFav = () => {
 
-    if (!isBookmark) {
+    if (isBookmark === false) {
       return (
         <IconButton icon="heart-outline" iconColor={'#fff'} size={24}
           style={{ marginRight: 15 }}
-          onPress={() => saveBookmark(id)} />
+          onPress={() => saveBookmark()} />
       )
     } else {
       return (
         <IconButton icon="heart" iconColor={"#ff0000"} size={24}
           style={{ marginRight: 15 }}
-          onPress={() => removeBookmark(id)} />
+          onPress={() => removeBookmark()} />
       )
     }
   }
 
-  useEffect(() => {
 
-    props.navigation.setOptions({
-      headerRight: () => renderButtonFav()
-    });
 
-  }, [isBookmark, data]);
-
-  useEffect(() => {
-    // getDietById(id).then((response) => {
-    //   setItem(response[0]);
-    //   setLoading(true);
-    // });
-    getSpecificDiet(id)
-      .then(res => setData(res?.data))
-    setLoading(true)
-  }, []);
-
-  if (loading === false) {
+  if (loading) {
 
     return (
 
@@ -156,7 +155,7 @@ export default function DietDetails(props) {
             <ImageBackground source={{ uri: `${IMAGE_URL}/${data?.diets?.image}` }} style={Styles.Header2Image} resizeMode={'cover'}>
               <LinearGradient colors={['rgba(0,0,0,0.7)', 'rgba(0,0,0,0.4)']} style={Styles.Header2Gradient}>
 
-                <Text style={Styles.Header2Category}>{data?.category?.title}</Text>
+                <Text style={Styles.Header2Category}>{data?.data?.category?.title}</Text>
                 <Text style={Styles.Header2Title}>{data?.diets?.title}</Text>
                 <Text style={Styles.Header2SubTitle}>{Strings.ST93 + ' ' + data?.diets?.servings + '  | ' + Strings.ST94 + ' ' + data?.diets?.time}</Text>
 

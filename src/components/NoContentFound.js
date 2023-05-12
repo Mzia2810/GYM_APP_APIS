@@ -11,18 +11,18 @@ export default function NoContentFound(props) {
     const language = contextState.language;
     const Strings = Languages[language].texts;
 
-    const {data} = props;
+    const { data, left } = props;
 
-        if(size(data) < 1){
+    if (size(data) < 1) {
 
-            return(
-                <View style={{alignSelf:'center', marginTop:20}}>
-                <Text style={{opacity:0.5, fontSize:16}}>{Strings.ST75}</Text>
-                </View>
-                );
+        return (
+            <View style={{ alignSelf: 'center', marginTop: 20, marginLeft: left }}>
+                <Text style={{ opacity: 0.5, fontSize: 16, }}>{Strings.ST75}</Text>
+            </View>
+        );
 
-        }else{
-            return null;
-        }
+    } else {
+        return null;
+    }
 
 }

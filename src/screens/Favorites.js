@@ -15,28 +15,28 @@ export default function Favorites(props) {
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
   const Strings = Languages[language].texts;
-  const {theme} = usePreferences();
-  
- return (
+  const { theme } = usePreferences();
+
+  return (
 
 
-  <View style={{flex: 1}}>
-    
-    <Tab.Navigator 
-    tabBarOptions={{
-        indicatorStyle: { backgroundColor: ColorsApp.PRIMARY, padding:2 },
-        labelStyle: { fontSize: 16, textTransform: 'capitalize', fontWeight:'bold' },
-        style: { backgroundColor: theme === "light" ? '#fff' : '#000' },
-      }}
-    >
-      <Tab.Screen name={Strings.ST27} component={DietsFav} />
-      <Tab.Screen name={Strings.ST5} component={WorkoutsFav} />
-    </Tab.Navigator>
+    <View style={{ flex: 1 }}>
+
+      <Tab.Navigator
+        tabBarOptions={{
+          indicatorStyle: { backgroundColor: ColorsApp.PRIMARY, padding: 2 },
+          labelStyle: { fontSize: 16, textTransform: 'capitalize', fontWeight: 'bold' },
+          style: { backgroundColor: theme === "light" ? '#fff' : '#000' },
+        }}
+      >
+        <Tab.Screen name={Strings.ST27} component={DietsFav} />
+        <Tab.Screen name={Strings.ST5} component={WorkoutsFav} />
+      </Tab.Navigator>
 
 
     </View>
 
-      );
+  );
 
 }
 

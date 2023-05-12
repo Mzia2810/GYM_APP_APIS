@@ -13,6 +13,7 @@ import LoadMoreButton from '../components/LoadMoreButton';
 import NoContentFound from '../components/NoContentFound';
 import { getSpecificCategoryData } from '../apis/ApiHandlers';
 import { IMAGE_URL } from '../apis/AxiosInstance';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SingleCategory(props) {
 
@@ -29,9 +30,10 @@ export default function SingleCategory(props) {
   // console.log("🚀 ~ file: SingleCategory.js:28 ~ SingleCategory ~ data:", data)
   const [showButton, setshowButton] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState({});
 
   const onChangeScreen = (id, title) => {
-    navigation.navigate('dietdetails', { id, title });
+    navigation.navigate('dietdetails', { id, title, user: user?.id });
   };
 
   useEffect(() => {
@@ -52,6 +54,11 @@ export default function SingleCategory(props) {
   // }, []);
 
   useEffect(() => {
+    AsyncStorage.getItem("@user").then((value) => {
+      if (value !== null) {
+        setUser(JSON.parse(value));
+      }
+    });
     getSpecificCategoryData(id)
       .then(res => setData(res.data.diets))
       .catch(error => console.error(error));

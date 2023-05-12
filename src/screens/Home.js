@@ -10,12 +10,15 @@ import LanguageContext from '../languages/LanguageContext';
 import Levels from '../components/Levels';
 import LatestDiets from '../components/LatestDiets';
 import { GetAllExerciseCategory } from '../apis/ApiHandlers';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Home(props) {
 
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
   const Strings = Languages[language].texts;
+  const [user, setUser] = React.useState({})
+  console.log("🚀 ~ file: Home.js:21 ~ Home ~ user:", user)
 
   const onChangeScreen = (screen) => {
     GetAllExerciseCategory()
@@ -32,9 +35,16 @@ export default function Home(props) {
   //   }
   // }
 
-  // useEffect(() => {
-  //   getData()
-  // },[])
+  useEffect(() => {
+    // getData()
+    AsyncStorage.getItem("@user").then((value) => {
+      if (value !== null) {
+
+        setUser(JSON.parse(value));
+      }
+    });
+    const Strings = Languages[language].texts;
+  }, [])
 
   return (
     <ScrollView

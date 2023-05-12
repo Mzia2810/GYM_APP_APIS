@@ -17,10 +17,13 @@ import { SIGNUP_URL } from "../apis/ApisEndPoints";
 import AxiosInstance from "../apis/AxiosInstance";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { signUp } from "../apis/ApiHandlers";
 
 const auth = getAuth();
 
 export default function Register(props) {
+  const { reset } = useNavigation();
+
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
   const Strings = Languages[language].texts;
@@ -35,66 +38,65 @@ export default function Register(props) {
   const navigation = useNavigation();
 
   const onChangeScreen = (screen) => {
-    console.log('MOVED',screen);
-    props.navigation.replace(screen);
+    console.log('MOVED', screen);
+    props.navigation.navigate(screen);
   };
 
-  //dummy
-  const signUpUser = async () => {
-    // meeting ao
-    try {
-      let data = JSON.stringify({
-        email,
-        name,
-        password
-      });
-      const result = await AxiosInstance.post(`${SIGNUP_URL}`,data);
-      if(result.status >= 200 && result.status < 300){
 
-
-        //also do om login api
-       await AsyncStorage.setItem('@token',result?.data?.user?.token||'')
-
-        // console.log("result", result.status);
-        onChangeScreen("StackNavigation")
-      }
-      
-    } catch (error) {
-      console.error("Error during signup:", error)
-      console.error("Error during signup:", error.response.data.message);
-    }
-  };
-  //end
 
   const register = async () => {
     setLoading(true);
-
     if ((email, password, name, checked != false)) {
-      const errorHandler = (e) => {
-        if (e.code == "auth/email-already-in-use") {
-          setLoading(false);
-          Alert.alert(Strings.ST104, Strings.ST36);
-        } else {
-          setLoading(false);
-          Alert.alert(Strings.ST104, Strings.ST33);
-        }
-      };
-      await createUserWithEmailAndPassword(auth, email, password, name)
-        .then(() => {
-          updateProfile({
-            displayName: name ? name : "",
-          })
-            .then(() => {
-              setLoading(false);
-            })
-            .catch(errorHandler);
-        })
-        .catch(errorHandler);
-    } else {
+      const res = await signUp(email, name, password)
+      console.log("🚀 ~ file: Register.js:73 ~ register ~ res:", res?.data)
+      await AsyncStorage.setItem('@token', res?.data?.user?.token)
+      await AsyncStorage.setItem('@user', JSON.stringify(res?.data?.user))
+
+      setEmail('')
+      setName('')
+      setPassword('')
+      setLoading(false);
+      // onChangeScreen('StackNavigation')
+      reset({
+        index: 0,
+        routes: [{ name: 'home' }],
+      });
+    }
+    else {
       setLoading(false);
       Alert.alert(Strings.ST104, Strings.ST33);
     }
+
   };
+  // const register = async () => {
+  //   setLoading(true);
+
+  //   if ((email, password, name, checked != false)) {
+  //     const errorHandler = (e) => {
+  //       if (e.code == "auth/email-already-in-use") {
+  //         setLoading(false);
+  //         Alert.alert(Strings.ST104, Strings.ST36);
+  //       } else {
+  //         setLoading(false);
+  //         Alert.alert(Strings.ST104, Strings.ST33);
+  //       }
+  //     };
+  //     await createUserWithEmailAndPassword(auth, email, password, name)
+  //       .then(() => {
+  //         updateProfile({
+  //           displayName: name ? name : "",
+  //         })
+  //           .then(() => {
+  //             setLoading(false);
+  //           })
+  //           .catch(errorHandler);
+  //       })
+  //       .catch(errorHandler);
+  //   } else {
+  //     setLoading(false);
+  //     Alert.alert(Strings.ST104, Strings.ST33);
+  //   }
+  // };
 
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: "center" }}>

@@ -1,4 +1,5 @@
 import {
+  ADD_FAV_PLAN,
   ALL_CATEGORY_DIETS,
   ALL_DIETS,
   CATEGORY_BLOG,
@@ -7,6 +8,7 @@ import {
   GET_ALL_BLOG,
   GET_ALL_EXERCISE,
   GET_ALL_EXERCISES,
+  GET_ALL_FAV_PLANS,
   GET_ALL_TAGS,
   GET_DIET_FAVOURITE,
   GET_PLANS,
@@ -14,21 +16,45 @@ import {
   GET_PRODUCT_TYPE,
   GET_SPECIFIC_DIETS,
   LOGIN_URL,
+  UPDATE_PROFILE,
   MY_EXERCISE,
   SIGNUP_URL,
-  SPECIFIC_CATEGORY_DATA
+  SPECIFIC_CATEGORY_DATA,
+  DELETE_USER,
+  DRAWER_BODY_PARTS,
+  GET_DRAWER_EXERCISE
 } from "./ApisEndPoints";
 import AxiosInstance from "./AxiosInstance";
 
 //login
-export const loginUser = (email, password) => {
-  return new Promise(async (resolve, reject) => {
-    return await AxiosInstance.post(`${LOGIN_URL}`, {
-      email,
-      password,
-    });
+
+export const logInUser = async (email, password) => {
+  const response = await AxiosInstance.post(`${LOGIN_URL}`, {
+    email,
+    password,
   });
+  console.log("🚀 ~ file: ApiHandlers.js:32 ~ logInUser ~ response:", response)
+  return response.data;
 };
+
+export const signUp = async (email, name, password) => {
+  const response = await AxiosInstance.post(`${SIGNUP_URL}`, {
+    email,
+    name,
+    password,
+  });
+  return response;
+};
+export const updateUserProfile = async (data) => {
+  console.log("🚀 ~ file: ApiHandlers.js:49 ~ updateUserProfile ~ data:", data)
+  const response = await AxiosInstance.post(`${UPDATE_PROFILE}`, data);
+  return response?.data;
+};
+export const deleteUser = async (id) => {
+  const response = await AxiosInstance.delete(`${DELETE_USER}/${id}`,);
+  return response?.data;
+};
+
 
 
 // all exercises
@@ -61,11 +87,12 @@ export const AllCategoryDiets = async () => {
   }
 };
 //  diets
-export const getSpecificDiet = async (id) => {
+export const getSpecificDiet = async (dietId, userId) => {
+  console.log("🚀 ~ file: ApiHandlers.js:88 ~ getSpecificDiet ~ userId:", userId)
+  console.log("🚀 ~ file: ApiHandlers.js:88 ~ getSpecificDiet ~ dietId:", dietId)
   try {
-
     const response = await AxiosInstance.post(`${GET_SPECIFIC_DIETS}`, {
-      _id: id,
+      dietId, userId
     });
     return response
   } catch (error) {
@@ -102,7 +129,7 @@ export const getFavouriteDiets = async (userId) => {
   try {
 
     const response = await AxiosInstance.post(`${GET_DIET_FAVOURITE}`, {
-      userId: userId,
+      userId,
     });
     return response?.data
   } catch (error) {
@@ -170,10 +197,26 @@ export const GetAllExerciseCategory = async (id) => {
   }
 };
 // GEt goals Drawer exercise 
-export const GetExerciseDrawerBodyParts = async (id) => {
+export const GetDrawerExercise = async (id) => {
   try {
-    const response = await AxiosInstance.get(`${DRAWER_BODY_PARTS}?id=${id}`);
+    const response = await AxiosInstance.post(`${GET_DRAWER_EXERCISE}`, {
+      "_id": id,
+    });
     const { status, data } = response;
+
+    return { status, data };
+  } catch (error) {
+    const { response } = error;
+    const { status, data } = response;
+    const message = data.message || "Something went wrong.";
+    throw new Error(message);
+  }
+};
+export const GetExerciseDrawerBodyParts = async () => {
+  try {
+    const response = await AxiosInstance.get(`${DRAWER_BODY_PARTS}`);
+    const { status, data } = response;
+    console.log("🚀 ~ file: ApiHandlers.js:202 ~ GetExerciseDrawerBodyParts ~ response:", response)
 
     return { status, data };
   } catch (error) {
@@ -255,6 +298,7 @@ export const getProductType = async () => {
     throw new Error(message);
   }
 };
+// plans api actions
 export const getPlans = async () => {
   try {
     const response = await AxiosInstance.get(`${GET_PLANS}`);
@@ -267,3 +311,30 @@ export const getPlans = async () => {
     throw new Error(message);
   }
 };
+
+export const addFavPlan = async (userId, dietId) => {
+  try {
+
+    const response = await AxiosInstance.post(`${ADD_FAV_PLAN}`, {
+      userId: userId,
+      dietId: dietId,
+    });
+    return response?.data
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to get specific diet");
+  }
+};
+export const getAllFavPlan = async (userId) => {
+  try {
+
+    const response = await AxiosInstance.post(`${GET_ALL_FAV_PLANS}`, {
+      userId: userId,
+    });
+    return response?.data
+  } catch (error) {
+    console.error(error);
+    throw new Error("");
+  }
+};
+

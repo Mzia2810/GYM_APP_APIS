@@ -1,5 +1,7 @@
 export const LOGIN_URL = "user/login";
 export const SIGNUP_URL = "user/SignUp";
+export const UPDATE_PROFILE = "user/updateProfile";
+export const DELETE_USER = "user/deleteUser";
 export const DRAWER_BODY_PARTS = "bodyPart/getAllBodyParts";
 export const GET_ALL_EXERCISE = "workout/allWorkoutSpecificCategory";
 export const GET_WORKOUT_DETAILS = "workout/getWorkoutDetail";
@@ -19,4 +21,7 @@ export const CATEGORY_BLOG = "post/categoryBlog";
 export const GET_PRODUCT_TYPE = "productType/getProductType";
 export const GET_PRODUCTS_BY_TYPE = "affiliateProduct/getProductsByType";
 export const GET_PLANS = "plan/getPlans";
+export const ADD_FAV_PLAN = "plan/addFavPlan";
+export const GET_ALL_FAV_PLANS = "plan/getAllFavPlan";
+
 //yhn end points dal dena

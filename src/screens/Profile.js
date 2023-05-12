@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   getAuth,
   signOut,
   EmailAuthProvider,
-  deleteUser,
+  // deleteUser,
   reauthenticateWithCredential,
-  updateEmail
+  updateEmail,
+  // updateProfile
 } from "firebase/auth";
 import {
   ScrollView,
@@ -13,8 +14,6 @@ import {
   Image,
   SafeAreaView,
   Alert,
-  Platform,
-  PermissionsAndroid,
   TouchableOpacity,
 } from "react-native";
 import AppLoading from "../components/InnerLoading";
@@ -33,97 +32,290 @@ import {
 } from "react-native-paper";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import * as ImagePicker from "expo-image-picker";
-import { style } from "deprecated-react-native-prop-types/DeprecatedTextPropTypes";
-import firebase from 'firebase/app';
-// import auth from '@react-native-firebase/auth';
+import * as FileSystem from 'expo-file-system';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Updates from 'expo-updates';
+import { IMAGE_URL } from "../apis/AxiosInstance";
+import { deleteUser, updateUserProfile } from "../apis/ApiHandlers";
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 const auth = getAuth();
 
 export default function Profile(props) {
+  const { reset } = useNavigation();
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
   const Strings = Languages[language].texts;
-  const [image, setImage] = useState();
-  const [imageUri, setImageUri] = useState();
+  const [imageUri, setImageUri] = useState(null);
+  const [base64Image, setBase64Image] = useState(null);
+  console.log("🚀 ~ file: Profile.js:49 ~ Profile ~ imageUri:", imageUri)
+
 
   const [isLoaded, setIsLoaded] = useState(false);
-  const [user, setUser] = useState([]);
-  console.log(user)
+  const [user, setUser] = useState({});
+  console.log("🚀 ~ file: Profile.js:56 ~ Profile ~ user:", user)
   const [visible, setVisible] = useState(false);
-  const [password, setPassword] = useState("");
-
+  const [update, setUpDate] = useState(false);
   const [email, setEmail] = useState("");
 
-  console.log(user);
 
+  // useEffect(() => {
+
+  // }, []);
+  // useEffect(() => {
+  //   setIsLoaded(true);
+  //   AsyncStorage.getItem("@user").then((value) => {
+  //     if (value !== null) {
+  //       setUser(JSON.parse(value));
+  //     }
+  //   });
+  //   if (imageUri) {
+  //     // alert('image')
+  //     handleUpdateEmail();
+  //   }
+  // }, [imageUri, update]);
+
+  useFocusEffect(
+    useCallback(() => {
+      setIsLoaded(true);
+      AsyncStorage.getItem("@user").then((value) => {
+        if (value !== null) {
+          setUser(JSON.parse(value));
+        }
+      });
+
+    }, [])
+  );
   const onChangeScreen = (screen) => {
     props.navigation.navigate(screen);
   };
 
-  const deleteAccount = () => {
-    if (password) {
-      let credential = EmailAuthProvider.credential(
-        auth.currentUser.email,
-        password
-      );
+  // const deleteAccount = () => {
+  //   if (password) {
+  //     let credential = EmailAuthProvider.credential(
+  //       auth.currentUser.email,
+  //       password
+  //     );
 
-      reauthenticateWithCredential(auth.currentUser, credential)
-        .then(() => {
-          deleteUser(user)
-            .then(() => {
-              // User deleted.
-            })
-            .catch((error) => {
-              console.log(error);
-              Alert.alert(Strings.ST32);
-            });
-        })
-        .catch((error) => {
-          console.log(error);
-          Alert.alert(Strings.ST32);
-        });
-    }
+  //     reauthenticateWithCredential(auth.currentUser, credential)
+  //       .then(() => {
+  //         deleteUser(user)
+  //           .then(() => {
+  //           })
+  //           .catch((error) => {
+  //             Alert.alert(Strings.ST32);
+  //           });
+  //       })
+  //       .catch((error) => {
+  //         Alert.alert(Strings.ST32);
+  //       });
+  //   }
+  // };
+  const deleteAccount = async (id) => {
+    await AsyncStorage.clear();
+    const result = await deleteUser(id);
+    setVisible(false)
+    // props.navigation.navigate('register');
+    reset({
+      index: 0,
+      routes: [{ name: 'register' }],
+    });
   };
 
+  const signOut = async () => {
+
+    await AsyncStorage.clear();
+    reset({
+      index: 0,
+      routes: [{ name: 'login' }],
+    });
+
+  }
   const hideDialog = () => setVisible(false);
 
-  const uploadFromGallery = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      alert("Sorry, we need media library permissions to make this work!");
-      return;
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 0.5,
-    });
-    if (!result.cancelled && result.uri) {
-      setImageUri(result.uri);
-      // console.log(result.uri);
-    }
-  };
+  // const uploadFromGallery = async () => {
+  //   const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  //   if (status !== "granted") {
+  //     alert("Sorry, we need media library permissions to make this work!");
+  //     return;
+  //   }
+  //   const result = await ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.All,
+  //     quality: 0.5,
+  //   });
+  //   if (!result.cancelled) {
+  //     setImageUri(result.assets[0]);
+  //   }
+  //   else {
+  //     setImageUri(null);
+  //   }
+  //   // await handleUpdateEmail();
 
-  // const [email, setEmail] = useState(user.email);
+  // };
+
+  // using firebase update email
+
+  // const handleUpdateEmail = async () => {
+  // try {
+  //   updateEmail(auth.currentUser, email).then((response) => {
+  //     signOut(auth)
+
+  //   }).catch(e => {
+  //     alert('email already in use')
+
+  //   })
+  // } catch (error) {
+  // }
+  // };
+  // const handleUpdateEmail = async () => {
+  //   const formData = new FormData();
+  //   formData.append('image', imageUri || user?.image);
+  //   formData.append('name', user?.name);
+  //   formData.append('email', email);
+  //   formData.append('userId', user?.id);
+  //   const res = await updateUserProfile(formData)
+
+  // }
+  // const uploadFromGallery = async () => {
+  //   try {
+  //     const result = await ImagePicker.launchImageLibraryAsync({
+  //       mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //       allowsEditing: true,
+  //       aspect: [4, 3],
+  //       quality: 1,
+  //     });
+
+  //     if (!result.cancelled) {
+  //       setImageUri(result.uri);
+  //     }
+  //   } catch (error) {
+  //     console.log('Error picking an image: ', error);
+  //   }
+  //   await handleUpdateEmail()
+  // };
+  // const handleUpdateEmail = async () => {
+  //   // try {
+  //   //   // if (email) {
+  //   //   //   await updateEmail(auth.currentUser, email);
+  //   //   // }
+  //   //   const formData = new FormData();
+  //   //   formData.append("image", imageUri || user?.image);
+  //   //   formData.append("name", user?.name);
+  //   //   formData.append("email", email || user?.email);
+  //   //   formData.append("userId", user?.id);
+  //   //   updateUserProfile(formData).then(result => setUser(result?.data))
+  //   //   // setUser(res.data);
+  //   // } catch (error) {
+  //   // }
+
+  //   try {
+  //     const fileInfo = await FileSystem.getInfoAsync(imageUri);
+  //     const fileType = fileInfo.mimeType;
+  //     const fileName = fileInfo.uri.split('/').pop();
+  //     const formData = new FormData();
+  //     formData.append('image', {
+  //       uri: imageUri,
+  //       name: fileName,
+  //       type: fileType,
+  //     } || user?.image);
+  //     formData.append('name', user?.name);
+  //     formData.append('email', email || user?.email);
+  //     formData.append('userId', user?.id);
+
+  //     const response = await fetch("https://wb-best-fit.herokuapp.com/api/user/updateProfile", {
+  //       method: 'POST',
+  //       body: formData,
+  //       headers: {
+  //         "X-Custom-Header": "foobar",
+  //         "Content-Type": "multipart/form-data",
+  //       },
+  //       redirect: 'follow',
+
+  //     })
+  //     const result = await response.json()
+  //     console.log("🚀 ~ file: Profile.js:205 ~ handleUpdateEmail ~ result:", result?.updatedData)
+  //     await AsyncStorage.removeItem('@user')
+  //     await AsyncStorage.setItem("@user", JSON.stringify(result?.updatedData))
+  //     const value = await AsyncStorage.getItem("@user")
+  //     if (value !== null) {
+  //       setUser(JSON.parse(value));
+  //     }
+  //   } catch (error) {
+  //     // Handle network or upload error
+  //     console.error(error);
+  //   }
+  // };
+
+
+
   const handleUpdateEmail = async () => {
     try {
-      updateEmail(auth.currentUser, email).then((response) => {
-        console.log('RESPONSE', response);
-        console.log('Email updated successfully');
+      const fileInfo = await FileSystem.getInfoAsync(imageUri);
+      const fileType = fileInfo.mimeType;
+      const fileName = fileInfo.uri.split('/').pop();
+      const formData = new FormData();
+      formData.append('image', {
+        uri: imageUri,
+        name: fileName,
+        type: fileType,
+      } || user?.image);
+      formData.append('name', user?.name);
+      formData.append('email', email || user?.email);
+      formData.append('userId', user?.id);
 
-      }).catch(e => {
-        console.log('ERROR', e);
-      })
-      // await firebase.auth().currentUser.updateEmail(email);
+      const response = await fetch("https://wb-best-fit.herokuapp.com/api/user/updateProfile", {
+        method: 'POST',
+        body: formData,
+        headers: {
+          "X-Custom-Header": "foobar",
+          "Content-Type": "multipart/form-data",
+        },
+        redirect: 'follow',
+      });
+      const result = await response.json();
+
+      await AsyncStorage.removeItem('@user');
+      await AsyncStorage.setItem("@user", JSON.stringify(result?.updatedData));
+      const value = await AsyncStorage.getItem("@user");
+      if (value !== null) {
+        setUser(JSON.parse(value));
+      }
     } catch (error) {
-      console.log(error);
-      console.log('Error updating email');
+      console.error(error);
     }
   };
 
-  useEffect(() => {
-    setUser(auth.currentUser);
-    setIsLoaded(true);
-  }, []);
+  const uploadFromGallery = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+      if (!result.cancelled) {
+        setImageUri(result.uri);
+      }
+    } catch (error) {
+      console.log('Error picking an image: ', error);
+    }
+    await handleUpdateEmail();
+  };
+
+
+
+
+  // const updateUserProfile = async (photoUrl) => {
+  //   const user = auth.currentUser;
+  //   try {
+  //     await updateProfile(user, {
+  //       photoURL: photoUrl,
+  //     });
+  //   } catch (error) {
+  //   }
+  // }
+
 
   if (isLoaded) {
     return (
@@ -133,9 +325,8 @@ export default function Profile(props) {
       >
         <SafeAreaView>
           <TouchableOpacity
-            onPress={() => uploadFromGallery()}
+            onPress={uploadFromGallery}
             style={{
-              // alignSelf:'center',
               marginTop: 100,
               marginLeft: 217,
               padding: 3,
@@ -149,9 +340,9 @@ export default function Profile(props) {
             <AntDesign name={"camera"} size={15} />
           </TouchableOpacity>
           <View style={Styles.HeaderProfile}>
-            {imageUri ? (
+            {imageUri || user?.image ? (
               <Image
-                source={{ uri: imageUri }}
+                source={{ uri: imageUri ? imageUri : `${IMAGE_URL}/${user?.image}` }}
                 style={Styles.ImageProfile}
                 resizeMode={"cover"}
               />
@@ -186,10 +377,11 @@ export default function Profile(props) {
             </View> */}
             <TextInput
               style={{ backgroundColor: "white", fontSize: 16, borderBottomWidth: 0, }}
-              value={email ? email : user.email}
-              onChangeText={(value) => setUser(value)}
+              value={email ? email : user?.email}
+              onChangeText={(value) => setEmail(value)}
               onSubmitEditing={handleUpdateEmail}
               placeholder={user.email}
+              returnKeyType="done"
             />
             {/* <Text>{user.email}</Text> */}
           </View>
@@ -223,7 +415,7 @@ export default function Profile(props) {
             <CustomButton
               Icon="logout"
               Label={Strings.ST9}
-              Click={() => signOut(auth)}
+              Click={() => signOut()}
             />
             <CustomButton
               Icon="account-cancel-outline"
@@ -235,15 +427,15 @@ export default function Profile(props) {
               <Dialog visible={visible} onDismiss={hideDialog}>
                 <Dialog.Content>
                   <Title>{Strings.ST144}</Title>
-                  <Paragraph style={{ marginVertical: 10 }}>
+                  {/* <Paragraph style={{ marginVertical: 10 }}>
                     {Strings.ST145}
-                  </Paragraph>
-                  <TextInput
+                  </Paragraph> */}
+                  {/* <TextInput
                     value={password}
                     mode="outlined"
                     secureTextEntry={true}
                     onChangeText={(text) => setPassword(text)}
-                  />
+                  /> */}
                 </Dialog.Content>
                 <Dialog.Actions
                   style={{
@@ -253,7 +445,7 @@ export default function Profile(props) {
                   }}
                 >
                   <Button onPress={() => hideDialog()}>{Strings.ST142}</Button>
-                  <Button onPress={() => deleteAccount()}>
+                  <Button onPress={() => deleteAccount(user?.id)}>
                     {Strings.ST143}
                   </Button>
                 </Dialog.Actions>
