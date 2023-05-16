@@ -5,7 +5,7 @@ import Styles from '../config/Styles';
 import Languages from '../languages';
 import LanguageContext from '../languages/LanguageContext';
 import { getDietsByUser } from "../config/DataApp";
-import {map} from 'lodash';
+import { map } from 'lodash';
 import AppLoading from '../components/InnerLoading';
 import TouchableScale from 'react-native-touchable-scale';
 import { Text } from 'react-native-paper';
@@ -27,26 +27,26 @@ export default function CustomDiets(props) {
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
   const Strings = Languages[language].texts;
-  
+
   const onChangeScreen = (screen) => {
     props.navigation.navigate(screen);
   };
 
   const onClickItem = (id, title) => {
-    props.navigation.navigate('dietdetails', {id, title});
+    props.navigation.navigate('dietdetails', { id, title });
   };
 
   const loadMore = () => {
 
     setLoading(true);
-    setPage(page+1);
+    setPage(page + 1);
 
-    getDietsByUser(auth.currentUser.uid, page+1).then((response) => {
+    getDietsByUser(auth.currentUser.uid, page + 1).then((response) => {
 
       if (!items) {
         setItems(response);
         setLoading(false);
-      }else{
+      } else {
         setItems([...items, ...response]);
         setLoading(false);
       }
@@ -65,70 +65,72 @@ export default function CustomDiets(props) {
 
     return (
       <LoadMoreButton
-      Indicator={loading}
-      showButton={showButton}
-      Items={items}
-      Num={5}
-      Click={() => loadMore()}/>
-      )
+        Indicator={loading}
+        showButton={showButton}
+        Items={items}
+        Num={5}
+        Click={() => loadMore()} />
+    )
   }
 
   useEffect(() => {
 
-    getDietsByUser(auth.currentUser.uid).then((response) => {
-        setItems(response);
-        setIsLoaded(true);
-    });
+    // getDietsByUser(auth.currentUser.uid).then((response) => {
+    //     setItems(response);
+    //     setIsLoaded(true);
+    // });
+
+    setIsLoaded(true);
   }, []);
 
   if (!isLoaded) {
 
     return (
-   
-        <AppLoading/>
-   
-         );
-   
-      }else{
 
- return (
+      <AppLoading />
 
-  <ScrollView
-  showsHorizontalScrollIndicator={false}
-  showsVerticalScrollIndicator={false}
->
-    
-<SafeAreaView>
+    );
 
-    <View style={Styles.ContentScreen}>
+  } else {
 
-    {map(items, (item, i) => (
-    
-    <TouchableScale key={i} activeOpacity={1} onPress={() => onClickItem(item.id, item.title)} activeScale={0.98} tension={100} friction={10}>
-    <ImageBackground source={{uri: item.image}} style={Styles.card3_background} imageStyle={{borderRadius: 8}}>
-      <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']} style={Styles.card3_gradient}>
+    return (
 
-        <Text numberOfLines={1} style={Styles.card3_category}>{item.category}</Text>
-        <Text numberOfLines={2} style={Styles.card3_title}>{item.title}</Text>
-        <Text numberOfLines={1} style={[Styles.card3_subtitle, {opacity:0.6}]}>{item.calories} {Strings.ST46} | {Strings.ST62} {item.servings}</Text>
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+      >
 
-      </LinearGradient>
-    </ImageBackground>
-    </TouchableScale>
+        <SafeAreaView>
 
-          ))}
+          <View style={Styles.ContentScreen}>
 
-    {renderButton()}
+            {map(items, (item, i) => (
 
-    <NoContentFound data={items}/>
+              <TouchableScale key={i} activeOpacity={1} onPress={() => onClickItem(item.id, item.title)} activeScale={0.98} tension={100} friction={10}>
+                <ImageBackground source={{ uri: item.image }} style={Styles.card3_background} imageStyle={{ borderRadius: 8 }}>
+                  <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']} style={Styles.card3_gradient}>
 
-    </View>
-    </SafeAreaView>
-    </ScrollView>
+                    <Text numberOfLines={1} style={Styles.card3_category}>{item.category}</Text>
+                    <Text numberOfLines={2} style={Styles.card3_title}>{item.title}</Text>
+                    <Text numberOfLines={1} style={[Styles.card3_subtitle, { opacity: 0.6 }]}>{item.calories} {Strings.ST46} | {Strings.ST62} {item.servings}</Text>
 
-      );
+                  </LinearGradient>
+                </ImageBackground>
+              </TouchableScale>
 
-}
+            ))}
+
+            {renderButton()}
+
+            <NoContentFound data={items} />
+
+          </View>
+        </SafeAreaView>
+      </ScrollView>
+
+    );
+
+  }
 
 }
 

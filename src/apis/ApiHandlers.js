@@ -218,7 +218,6 @@ export const GetExerciseDrawerBodyParts = async () => {
   try {
     const response = await AxiosInstance.get(`${DRAWER_BODY_PARTS}`);
     const { status, data } = response;
-    console.log("🚀 ~ file: ApiHandlers.js:202 ~ GetExerciseDrawerBodyParts ~ response:", response)
 
     return { status, data };
   } catch (error) {

@@ -5,7 +5,7 @@ import Styles from '../config/Styles';
 import Languages from '../languages';
 import LanguageContext from '../languages/LanguageContext';
 import { getWorkoutByUser } from "../config/DataApp";
-import {map} from 'lodash';
+import { map } from 'lodash';
 import AppLoading from '../components/InnerLoading';
 import TouchableScale from 'react-native-touchable-scale';
 import { Text, IconButton } from 'react-native-paper';
@@ -28,32 +28,32 @@ export default function CustomWorkouts(props) {
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
   const Strings = Languages[language].texts;
-  
+
   const onChangeScreen = (screen) => {
     props.navigation.navigate(screen);
   };
 
   const onClickItem = (id, title) => {
-    props.navigation.navigate('workoutdetails', {id, title});
+    props.navigation.navigate('workoutdetails', { id, title });
   };
 
   const buttonSearch = () => {
     return (
-      <IconButton icon="magnify" size={24} style={{marginLeft:15}} onPress={() => onChangeScreen('searchworkout')}/>
-      )
+      <IconButton icon="magnify" size={24} style={{ marginLeft: 15 }} onPress={() => onChangeScreen('searchworkout')} />
+    )
   };
 
   const loadMore = () => {
 
     setLoading(true);
-    setPage(page+1);
+    setPage(page + 1);
 
-    getWorkoutByUser(auth.currentUser.uid, page+1).then((response) => {
+    getWorkoutByUser(auth.currentUser.uid, page + 1).then((response) => {
 
       if (!items) {
         setItems(response);
         setLoading(false);
-      }else{
+      } else {
         setItems([...items, ...response]);
         setLoading(false);
       }
@@ -72,72 +72,73 @@ export default function CustomWorkouts(props) {
 
     return (
       <LoadMoreButton
-      Indicator={loading}
-      showButton={showButton}
-      Items={items}
-      Num={5}
-      Click={() => loadMore()}/>
-      )
+        Indicator={loading}
+        showButton={showButton}
+        Items={items}
+        Num={5}
+        Click={() => loadMore()} />
+    )
   }
 
   useEffect(() => {
-    getWorkoutByUser(auth.currentUser.uid).then((response) => {
-        setItems(response);
-        setIsLoaded(true);
-    });
+    // getWorkoutByUser(auth.currentUser.uid).then((response) => {
+    //     setItems(response);
+    //     setIsLoaded(true);
+    // });
+    setIsLoaded(true);
   }, []);
 
   if (!isLoaded) {
 
     return (
-   
-        <AppLoading/>
-   
-         );
-   
-      }else{
 
- return (
+      <AppLoading />
 
-  <ScrollView
-  showsHorizontalScrollIndicator={false}
-  showsVerticalScrollIndicator={false}
->
-    
-<SafeAreaView>
+    );
 
-    <View style={Styles.ContentScreen}>
+  } else {
 
-    {map(items, (item, i) => (
-    
-    <TouchableScale key={i} activeOpacity={1} onPress={() => onClickItem(item.id, item.title)} activeScale={0.98} tension={100} friction={10}>
-    <ImageBackground source={{uri: item.image}} style={Styles.card3_background} imageStyle={{borderRadius: 8}}>
-      <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']} style={Styles.card3_gradient}>
+    return (
 
-      <View style={Styles.card3_viewicon}>
-        {item.rate ? <LevelRate rate={item.rate}/> : null}
-      </View>
-      
-        <Text numberOfLines={2} style={Styles.card3_title}>{item.title}</Text>
-        <Text numberOfLines={2} style={Styles.card3_subtitle}>{item.duration +'  ·  '+ item.level}</Text>
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        showsVerticalScrollIndicator={false}
+      >
 
-      </LinearGradient>
-    </ImageBackground>
-    </TouchableScale>
+        <SafeAreaView>
 
-          ))}
+          <View style={Styles.ContentScreen}>
 
-    {renderButton()}
+            {map(items, (item, i) => (
 
-    <NoContentFound data={items}/>
+              <TouchableScale key={i} activeOpacity={1} onPress={() => onClickItem(item.id, item.title)} activeScale={0.98} tension={100} friction={10}>
+                <ImageBackground source={{ uri: item.image }} style={Styles.card3_background} imageStyle={{ borderRadius: 8 }}>
+                  <LinearGradient colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']} style={Styles.card3_gradient}>
 
-    </View>
-    </SafeAreaView>
-    </ScrollView>
+                    <View style={Styles.card3_viewicon}>
+                      {item.rate ? <LevelRate rate={item.rate} /> : null}
+                    </View>
 
-      );
+                    <Text numberOfLines={2} style={Styles.card3_title}>{item.title}</Text>
+                    <Text numberOfLines={2} style={Styles.card3_subtitle}>{item.duration + '  ·  ' + item.level}</Text>
 
-}
+                  </LinearGradient>
+                </ImageBackground>
+              </TouchableScale>
+
+            ))}
+
+            {renderButton()}
+
+            <NoContentFound data={items} />
+
+          </View>
+        </SafeAreaView>
+      </ScrollView>
+
+    );
+
+  }
 
 }
 
