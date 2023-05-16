@@ -47,31 +47,38 @@ export default function Profile(props) {
   const language = contextState.language;
   const Strings = Languages[language].texts;
   const [imageUri, setImageUri] = useState(null);
+  console.log("🚀 ~ file: Profile.js:50 ~ Profile ~ imageUri:", imageUri)
   const [image, setImage] = useState(null);
 
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [user, setUser] = useState({});
+  // console.log("🚀 ~ file: Profile.js:55 ~ Profile ~ user:", user)
   const [visible, setVisible] = useState(false);
   const [update, setUpDate] = useState(false);
   const [email, setEmail] = useState("");
 
 
-  // useEffect(() => {
+  const [videos, setVideos] = useState([]);
+  // console.log("🚀 ~ file: Profile.js:61 ~ Profile ~ videos:", videos)
 
-  // }, []);
   // useEffect(() => {
-  //   setIsLoaded(true);
-  //   AsyncStorage.getItem("@user").then((value) => {
-  //     if (value !== null) {
-  //       setUser(JSON.parse(value));
-  //     }
-  //   });
-  //   if (imageUri) {
-  //     // alert('image')
-  //     handleUpdateEmail();
+  //   fetchSuggestedVideos();
+  // }, []);
+
+  // const fetchSuggestedVideos = async () => {
+  //   // let YOUR_API_KEY = 'AIzaSyAY6m77N43hVcfwHmwpIkjlbM8Hu_fc_b8'
+  //   try {
+  //     const response = await axios.get(
+  //       `https://www.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&maxResults=10&key='AIzaSyAY6m77N43hVcfwHmwpIkjlbM8Hu_fc_b8'`
+  //     );
+  //     console.log("🚀 ~ file: Profile.js:73 ~ fetchSuggestedVideos ~ response:", response)
+
+  //     setVideos(response.data.items);
+  //   } catch (error) {
+  //     console.error('Error fetching suggested videos:', error);
   //   }
-  // }, [imageUri, update]);
+  // };
 
   useFocusEffect(
     useCallback(() => {
@@ -175,28 +182,6 @@ export default function Profile(props) {
 
   // }
 
-  const uploadFromGallery = async () => {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 1,
-      });
-      console.log("🚀 ~ file: Profile.js:186 ~ uploadFromGallery ~ result:", result)
-
-      if (!result?.assets.cancelled) {
-        setImageUri(result.assets[0].uri);
-        setImage({
-          fileType: result.assets[0].type,
-          uri: result.assets[0].uri,
-
-        });
-        handleUpdateEmail()
-      }
-    } catch (error) {
-      console.log('Error picking an image: ', error);
-    }
-  };
-
   // const handleUpdateEmail = async () => {
   //   // try {
   //   //   // if (email) {
@@ -251,14 +236,45 @@ export default function Profile(props) {
   // };
 
 
-
-  const handleUpdateEmail = async () => {
+  const uploadFromGallery = async () => {
     try {
-      if (image !== null) {
-        console.log("🚀 ~ file: Profile.js:259 ~ handleUpdateEmail ~ image:", image)
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+      });
+      console.log("🚀 ~ file: Profile.js:186 ~ uploadFromGallery ~ result:", result?.assets)
+
+      if (!result?.cancelled) {
+        const fileName = result?.assets[0]?.uri.split('/').pop();
+        console.log("===============> fileName:", fileName)
+        console.log("================>uri", result.uri)
+        const fileType = fileName.split('.').pop();
+        console.log("=================> fileType:", fileType)
+        var photo = {
+          uri: result.uri,
+          type: fileType,
+          name: fileName,
+        };
+
+        await setImageUri(result.uri);
+
+        handleUpdateEmail(photo)
       }
+    } catch (error) {
+      console.log('Error picking an image: ', error);
+    }
+  };
+
+
+
+
+  const handleUpdateEmail = async (image) => {
+
+    try {
+      console.log("========> Image Detail:", image)
       const formData = new FormData();
-      formData.append('image', image != null ? image : user?.image);
+      console.log("🚀 ~ file: Profile.js:277 ~ handleUpdateEmail ~ imageUri:", imageUri)
+      formData.append('image', imageUri ? image : user?.image);
 
       formData.append('name', user?.name);
       formData.append('email', email !== '' ? email : user?.email);
@@ -268,17 +284,17 @@ export default function Profile(props) {
         method: 'POST',
         body: formData,
         headers: {
+          "Accept": "application/json",
           "X-Custom-Header": "foobar",
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("🚀 ~ file: Profile.js:274 ~ handleUpdateEmail ~ response:", response)
       const result = await response.json();
+      console.log("🚀 ~ file: Profile.js:287 ~ handleUpdateEmail ~ result:", result)
 
       await AsyncStorage.removeItem('@user');
       await AsyncStorage.setItem("@user", JSON.stringify(result?.updatedData));
       const value = await AsyncStorage.getItem("@user");
-      console.log("🚀 ~ file: Profile.js:282 ~ handleUpdateEmail ~ value:", value)
       if (value !== null) {
         setUser(JSON.parse(value));
         setImage(null)
