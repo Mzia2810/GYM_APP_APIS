@@ -47,13 +47,11 @@ export default function Profile(props) {
   const language = contextState.language;
   const Strings = Languages[language].texts;
   const [imageUri, setImageUri] = useState(null);
-  const [base64Image, setBase64Image] = useState(null);
-  console.log("🚀 ~ file: Profile.js:49 ~ Profile ~ imageUri:", imageUri)
+  const [image, setImage] = useState(null);
 
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [user, setUser] = useState({});
-  console.log("🚀 ~ file: Profile.js:56 ~ Profile ~ user:", user)
   const [visible, setVisible] = useState(false);
   const [update, setUpDate] = useState(false);
   const [email, setEmail] = useState("");
@@ -176,23 +174,29 @@ export default function Profile(props) {
   //   const res = await updateUserProfile(formData)
 
   // }
-  // const uploadFromGallery = async () => {
-  //   try {
-  //     const result = await ImagePicker.launchImageLibraryAsync({
-  //       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  //       allowsEditing: true,
-  //       aspect: [4, 3],
-  //       quality: 1,
-  //     });
 
-  //     if (!result.cancelled) {
-  //       setImageUri(result.uri);
-  //     }
-  //   } catch (error) {
-  //     console.log('Error picking an image: ', error);
-  //   }
-  //   await handleUpdateEmail()
-  // };
+  const uploadFromGallery = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 1,
+      });
+      console.log("🚀 ~ file: Profile.js:186 ~ uploadFromGallery ~ result:", result)
+
+      if (!result?.assets.cancelled) {
+        setImageUri(result.assets[0].uri);
+        setImage({
+          fileType: result.assets[0].type,
+          uri: result.assets[0].uri,
+
+        });
+        handleUpdateEmail()
+      }
+    } catch (error) {
+      console.log('Error picking an image: ', error);
+    }
+  };
+
   // const handleUpdateEmail = async () => {
   //   // try {
   //   //   // if (email) {
@@ -222,7 +226,7 @@ export default function Profile(props) {
   //     formData.append('email', email || user?.email);
   //     formData.append('userId', user?.id);
 
-  //     const response = await fetch("https://wb-best-fit.herokuapp.com/api/user/updateProfile", {
+  //     const response = await fetch("https://wb-basic-fit-production.up.railway.app/user/updateProfile", {
   //       method: 'POST',
   //       body: formData,
   //       headers: {
@@ -250,58 +254,86 @@ export default function Profile(props) {
 
   const handleUpdateEmail = async () => {
     try {
-      const fileInfo = await FileSystem.getInfoAsync(imageUri);
-      const fileType = fileInfo.mimeType;
-      const fileName = fileInfo.uri.split('/').pop();
+      if (image !== null) {
+        console.log("🚀 ~ file: Profile.js:259 ~ handleUpdateEmail ~ image:", image)
+      }
       const formData = new FormData();
-      formData.append('image', {
-        uri: imageUri,
-        name: fileName,
-        type: fileType,
-      } || user?.image);
+      formData.append('image', image != null ? image : user?.image);
+
       formData.append('name', user?.name);
-      formData.append('email', email || user?.email);
+      formData.append('email', email !== '' ? email : user?.email);
       formData.append('userId', user?.id);
 
-      const response = await fetch("https://wb-best-fit.herokuapp.com/api/user/updateProfile", {
+      const response = await fetch("https://wb-basic-fit-production.up.railway.app/api/user/updateProfile", {
         method: 'POST',
         body: formData,
         headers: {
           "X-Custom-Header": "foobar",
           "Content-Type": "multipart/form-data",
         },
-        redirect: 'follow',
       });
+      console.log("🚀 ~ file: Profile.js:274 ~ handleUpdateEmail ~ response:", response)
       const result = await response.json();
 
       await AsyncStorage.removeItem('@user');
       await AsyncStorage.setItem("@user", JSON.stringify(result?.updatedData));
       const value = await AsyncStorage.getItem("@user");
+      console.log("🚀 ~ file: Profile.js:282 ~ handleUpdateEmail ~ value:", value)
       if (value !== null) {
         setUser(JSON.parse(value));
+        setImage(null)
+        setEmail('')
       }
+
     } catch (error) {
       console.error(error);
     }
   };
 
-  const uploadFromGallery = async () => {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
+  // const uploadFromGallery = async () => {
+  //   try {
+  //     const result = await ImagePicker.launchImageLibraryAsync({
+  //       mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //       quality: 1,
+  //     });
 
-      if (!result.cancelled) {
-        setImageUri(result.uri);
-      }
-    } catch (error) {
-      console.log('Error picking an image: ', error);
-    }
-    await handleUpdateEmail();
-  };
+  //     if (!result.cancelled) {
+  //       setImageUri(result?.uri);
+  //       const fileInfo = await FileSystem.getInfoAsync(result.uri);
+  //       const fileType = fileInfo.mimeType;
+  //       const fileName = fileInfo.uri.split('/').pop();
+  //       const formData = new FormData();
+  //       formData.append('image', {
+  //         uri: result.uri,
+  //         fileName: fileName,
+  //         fileType: fileType,
+  //       });
+  //       formData.append('name', user?.name);
+  //       formData.append('email', user?.email);
+  //       formData.append('userId', user?.id);
+
+  //       const response = await fetch("https://wb-basic-fit-production.up.railway.app/api/user/updateProfile", {
+  //         method: 'POST',
+  //         body: formData,
+  //         headers: {
+  //           "X-Custom-Header": "foobar",
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //         redirect: 'follow',
+  //       });
+  //       const result = await response.json();
+
+  //       await AsyncStorage.removeItem('@user');
+  //       await AsyncStorage.setItem("@user", JSON.stringify(result?.updatedData));
+  //       const value = await AsyncStorage.getItem("@user");
+  //       if (value !== null) {
+  //         setUser(JSON.parse(value));
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log('Error picking an image: ', error);
+  //   }
+  // };
 
 
 

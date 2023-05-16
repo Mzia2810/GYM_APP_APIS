@@ -1,9 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { Alert } from "react-native";
-export const IMAGE_URL = 'https://wb-best-fit.herokuapp.com';
+export const IMAGE_URL = 'https://wb-basic-fit-production.up.railway.app';
 const AxiosInstance = axios.create({
-  baseURL: "https://wb-best-fit.herokuapp.com/api/",
+  baseURL: "https://wb-basic-fit-production.up.railway.app/api/",
   timeout: 5000,
   headers: { "X-Custom-Header": "foobar", 'Content-Type': 'application/json' },
 });

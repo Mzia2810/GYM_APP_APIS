@@ -47,6 +47,8 @@ export default function Register(props) {
   const register = async () => {
     setLoading(true);
     if ((email, password, name, checked != false)) {
+      console.log("🚀 ~ file: Register.js:50 ~ register ~ checked:")
+
       const res = await signUp(email, name, password)
       console.log("🚀 ~ file: Register.js:73 ~ register ~ res:", res?.data)
       await AsyncStorage.setItem('@token', res?.data?.user?.token)
