@@ -36,16 +36,25 @@ export const logInUser = async (email, password) => {
   console.log("🚀 ~ file: ApiHandlers.js:32 ~ logInUser ~ response:", response)
   return response.data;
 };
-export const signUp = async (email, name, password) => {
-  const response = await AxiosInstance.post(`${SIGNUP_URL}`, {
-    email,
-    name,
-    password,
-  });
-  console.log("🚀 ~ file: ApiHandlers.js:42 ~ signUp ~ response:", response)
-  return response;
-};
+// export const signUp = async (email, name, password) => {
+//   const response = await AxiosInstance.post(`${SIGNUP_URL}`, {
+//     email,
+//     name,
+//     password,
+//   });
+//   console.log("🚀 ~ file: ApiHandlers.js:42 ~ signUp ~ response:", response?.data)
+//   return response;
+// };
 
+export const signUp = async (data) => {
+  try {
+    const response = await AxiosInstance.post(SIGNUP_URL, data);
+    return response;
+  } catch (error) {
+    alert('Email Already in use');
+    throw error;
+  }
+};
 
 export const updateUserProfile = async (data) => {
   console.log("🚀 ~ file: ApiHandlers.js:49 ~ updateUserProfile ~ data:", data)

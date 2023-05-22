@@ -18,7 +18,7 @@ import AxiosInstance from "../apis/AxiosInstance";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { signUp } from "../apis/ApiHandlers";
-
+import * as Updates from 'expo-updates';
 const auth = getAuth();
 
 export default function Register(props) {
@@ -41,33 +41,54 @@ export default function Register(props) {
     console.log('MOVED', screen);
     props.navigation.navigate(screen);
   };
+  async function onFetchUpdateAsync() {
+    try {
+      const update = await Updates.checkForUpdateAsync();
 
+      if (update.isAvailable) {
+        await Updates.fetchUpdateAsync();
+        await Updates.reloadAsync();
+      }
+    } catch (error) {
+      // You can also add an alert() to see the error message in case of an error when fetching updates.
+      console.log(`Error fetching latest Expo update: ${error}`);
+    }
+  }
 
 
   const register = async () => {
-    setLoading(true);
+    // setLoading(true);
     if ((email, password, name, checked != false)) {
-      console.log("🚀 ~ file: Register.js:50 ~ register ~ checked:")
-
-      const res = await signUp(email, name, password)
-      console.log("🚀 ~ file: Register.js:73 ~ register ~ res:", res?.data)
-      await AsyncStorage.setItem('@token', res?.data?.user?.token)
-      await AsyncStorage.setItem('@user', JSON.stringify(res?.data?.user))
-
-      setEmail('')
-      setName('')
-      setPassword('')
-      setLoading(false);
-      // onChangeScreen('StackNavigation')
-      reset({
-        index: 0,
-        routes: [{ name: 'home' }],
+      var raw = JSON.stringify({
+        "email": email,
+        "name": name,
+        "password": password
       });
+      console.log("🚀 ~ file: Register.js:73 ~ register ~ res:",)
+      const res = await signUp(raw)
+      console.log("🚀 ~ file: Register.js:73 ~ register ~ res:", res?.data)
+      if (res?.data?.success) {
+        await AsyncStorage.setItem('@token', res?.data?.user?.token)
+        await AsyncStorage.setItem('@user', JSON.stringify(res?.data?.user))
+        setEmail('')
+        setName('')
+        setPassword('')
+        setLoading(false);
+        reset({
+          index: 0,
+          routes: [{ name: 'home' }],
+        });
+        onFetchUpdateAsync()
+      }
+
+
+
     }
     else {
-      setLoading(false);
-      Alert.alert(Strings.ST104, Strings.ST33);
+      // setLoading(false);
+      Alert.alert(Strings.ST33);
     }
+    // setLoading(false);
 
   };
   // const register = async () => {

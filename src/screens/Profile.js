@@ -1,14 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
-  getAuth,
-  signOut,
-  EmailAuthProvider,
-  // deleteUser,
-  reauthenticateWithCredential,
-  updateEmail,
-  // updateProfile
-} from "firebase/auth";
-import {
   ScrollView,
   View,
   Image,
@@ -32,53 +23,28 @@ import {
 } from "react-native-paper";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import * as ImagePicker from "expo-image-picker";
-import * as FileSystem from 'expo-file-system';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Updates from 'expo-updates';
 import { IMAGE_URL } from "../apis/AxiosInstance";
 import { deleteUser, updateUserProfile } from "../apis/ApiHandlers";
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-
-const auth = getAuth();
+import { getExtension } from 'expo-file-system';
 
 export default function Profile(props) {
   const { reset } = useNavigation();
   const contextState = React.useContext(LanguageContext);
   const language = contextState.language;
   const Strings = Languages[language].texts;
-  const [imageUri, setImageUri] = useState(null);
-  console.log("🚀 ~ file: Profile.js:50 ~ Profile ~ imageUri:", imageUri)
   const [image, setImage] = useState(null);
+
 
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [user, setUser] = useState({});
-  // console.log("🚀 ~ file: Profile.js:55 ~ Profile ~ user:", user)
   const [visible, setVisible] = useState(false);
   const [update, setUpDate] = useState(false);
   const [email, setEmail] = useState("");
 
 
-  const [videos, setVideos] = useState([]);
-  // console.log("🚀 ~ file: Profile.js:61 ~ Profile ~ videos:", videos)
-
-  // useEffect(() => {
-  //   fetchSuggestedVideos();
-  // }, []);
-
-  // const fetchSuggestedVideos = async () => {
-  //   // let YOUR_API_KEY = 'AIzaSyAY6m77N43hVcfwHmwpIkjlbM8Hu_fc_b8'
-  //   try {
-  //     const response = await axios.get(
-  //       `https://www.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&maxResults=10&key='AIzaSyAY6m77N43hVcfwHmwpIkjlbM8Hu_fc_b8'`
-  //     );
-  //     console.log("🚀 ~ file: Profile.js:73 ~ fetchSuggestedVideos ~ response:", response)
-
-  //     setVideos(response.data.items);
-  //   } catch (error) {
-  //     console.error('Error fetching suggested videos:', error);
-  //   }
-  // };
 
   useFocusEffect(
     useCallback(() => {
@@ -88,7 +54,6 @@ export default function Profile(props) {
           setUser(JSON.parse(value));
         }
       });
-
     }, [])
   );
   const onChangeScreen = (screen) => {
@@ -137,145 +102,72 @@ export default function Profile(props) {
 
   }
   const hideDialog = () => setVisible(false);
-
-  // const uploadFromGallery = async () => {
-  //   const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  //   if (status !== "granted") {
-  //     alert("Sorry, we need media library permissions to make this work!");
-  //     return;
-  //   }
-  //   const result = await ImagePicker.launchImageLibraryAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.All,
-  //     quality: 0.5,
-  //   });
-  //   if (!result.cancelled) {
-  //     setImageUri(result.assets[0]);
-  //   }
-  //   else {
-  //     setImageUri(null);
-  //   }
-  //   // await handleUpdateEmail();
-
-  // };
-
-  // using firebase update email
-
-  // const handleUpdateEmail = async () => {
-  // try {
-  //   updateEmail(auth.currentUser, email).then((response) => {
-  //     signOut(auth)
-
-  //   }).catch(e => {
-  //     alert('email already in use')
-
-  //   })
-  // } catch (error) {
-  // }
-  // };
-  // const handleUpdateEmail = async () => {
-  //   const formData = new FormData();
-  //   formData.append('image', imageUri || user?.image);
-  //   formData.append('name', user?.name);
-  //   formData.append('email', email);
-  //   formData.append('userId', user?.id);
-  //   const res = await updateUserProfile(formData)
-
-  // }
-
-  // const handleUpdateEmail = async () => {
-  //   // try {
-  //   //   // if (email) {
-  //   //   //   await updateEmail(auth.currentUser, email);
-  //   //   // }
-  //   //   const formData = new FormData();
-  //   //   formData.append("image", imageUri || user?.image);
-  //   //   formData.append("name", user?.name);
-  //   //   formData.append("email", email || user?.email);
-  //   //   formData.append("userId", user?.id);
-  //   //   updateUserProfile(formData).then(result => setUser(result?.data))
-  //   //   // setUser(res.data);
-  //   // } catch (error) {
-  //   // }
-
-  //   try {
-  //     const fileInfo = await FileSystem.getInfoAsync(imageUri);
-  //     const fileType = fileInfo.mimeType;
-  //     const fileName = fileInfo.uri.split('/').pop();
-  //     const formData = new FormData();
-  //     formData.append('image', {
-  //       uri: imageUri,
-  //       name: fileName,
-  //       type: fileType,
-  //     } || user?.image);
-  //     formData.append('name', user?.name);
-  //     formData.append('email', email || user?.email);
-  //     formData.append('userId', user?.id);
-
-  //     const response = await fetch("https://wb-basic-fit-production.up.railway.app/user/updateProfile", {
-  //       method: 'POST',
-  //       body: formData,
-  //       headers: {
-  //         "X-Custom-Header": "foobar",
-  //         "Content-Type": "multipart/form-data",
-  //       },
-  //       redirect: 'follow',
-
-  //     })
-  //     const result = await response.json()
-  //     console.log("🚀 ~ file: Profile.js:205 ~ handleUpdateEmail ~ result:", result?.updatedData)
-  //     await AsyncStorage.removeItem('@user')
-  //     await AsyncStorage.setItem("@user", JSON.stringify(result?.updatedData))
-  //     const value = await AsyncStorage.getItem("@user")
-  //     if (value !== null) {
-  //       setUser(JSON.parse(value));
-  //     }
-  //   } catch (error) {
-  //     // Handle network or upload error
-  //     console.error(error);
-  //   }
-  // };
-
-
   const uploadFromGallery = async () => {
     try {
+
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         quality: 1,
       });
-      console.log("🚀 ~ file: Profile.js:186 ~ uploadFromGallery ~ result:", result?.assets)
 
       if (!result?.cancelled) {
-        const fileName = result?.assets[0]?.uri.split('/').pop();
-        console.log("===============> fileName:", fileName)
-        console.log("================>uri", result.uri)
-        const fileType = fileName.split('.').pop();
-        console.log("=================> fileType:", fileType)
-        var photo = {
-          uri: result.uri,
-          type: fileType,
-          name: fileName,
-        };
+        console.log("🚀 ~ file: Profile.js:113 ~ uploadFromGallery ~ result:", result)
+        try {
+          setImage(result.assets[0].uri);
+          const fileName = result.uri.split('/').pop();
+          const fileType = fileName.split('.').pop();
+          const formData = new FormData();
+          formData.append('image', {
+            uri: result.assets[0].uri,
+            type: "image/" + fileType,
+            name: fileName,
 
-        await setImageUri(result.uri);
+          });
 
-        handleUpdateEmail(photo)
+          formData.append('userId', user?.id);
+
+          const response = await fetch("https://wb-basic-fit-production.up.railway.app/api/user/upload-images", {
+            method: 'POST',
+            body: formData,
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+          const responseData = await response.json();
+
+          if (responseData?.success) {
+            await AsyncStorage.removeItem('@user');
+            await AsyncStorage.setItem("@user", JSON.stringify(responseData?.updatedData));
+            const value = await AsyncStorage.getItem("@user");
+            if (value !== null) {
+              await setUser(JSON.parse(value));
+              // setImage(null)
+            }
+
+          }
+
+        } catch (error) {
+          console.error(error);
+        }
       }
     } catch (error) {
-      console.log('Error picking an image: ', error);
+      alert('Error picking an image: ');
     }
+  };
+
+  const getExtension = (filename) => {
+    return filename.split('.').pop();
   };
 
 
 
 
-  const handleUpdateEmail = async (image) => {
+  const handleUpdateEmail = async () => {
 
     try {
-      console.log("========> Image Detail:", image)
       const formData = new FormData();
-      console.log("🚀 ~ file: Profile.js:277 ~ handleUpdateEmail ~ imageUri:", imageUri)
-      formData.append('image', imageUri ? image : user?.image);
-
+      formData.append('image', user?.image);
       formData.append('name', user?.name);
       formData.append('email', email !== '' ? email : user?.email);
       formData.append('userId', user?.id);
@@ -284,9 +176,8 @@ export default function Profile(props) {
         method: 'POST',
         body: formData,
         headers: {
-          "Accept": "application/json",
-          "X-Custom-Header": "foobar",
-          "Content-Type": "multipart/form-data",
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
       });
       const result = await response.json();
@@ -297,7 +188,6 @@ export default function Profile(props) {
       const value = await AsyncStorage.getItem("@user");
       if (value !== null) {
         setUser(JSON.parse(value));
-        setImage(null)
         setEmail('')
       }
 
@@ -305,53 +195,6 @@ export default function Profile(props) {
       console.error(error);
     }
   };
-
-  // const uploadFromGallery = async () => {
-  //   try {
-  //     const result = await ImagePicker.launchImageLibraryAsync({
-  //       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  //       quality: 1,
-  //     });
-
-  //     if (!result.cancelled) {
-  //       setImageUri(result?.uri);
-  //       const fileInfo = await FileSystem.getInfoAsync(result.uri);
-  //       const fileType = fileInfo.mimeType;
-  //       const fileName = fileInfo.uri.split('/').pop();
-  //       const formData = new FormData();
-  //       formData.append('image', {
-  //         uri: result.uri,
-  //         fileName: fileName,
-  //         fileType: fileType,
-  //       });
-  //       formData.append('name', user?.name);
-  //       formData.append('email', user?.email);
-  //       formData.append('userId', user?.id);
-
-  //       const response = await fetch("https://wb-basic-fit-production.up.railway.app/api/user/updateProfile", {
-  //         method: 'POST',
-  //         body: formData,
-  //         headers: {
-  //           "X-Custom-Header": "foobar",
-  //           "Content-Type": "multipart/form-data",
-  //         },
-  //         redirect: 'follow',
-  //       });
-  //       const result = await response.json();
-
-  //       await AsyncStorage.removeItem('@user');
-  //       await AsyncStorage.setItem("@user", JSON.stringify(result?.updatedData));
-  //       const value = await AsyncStorage.getItem("@user");
-  //       if (value !== null) {
-  //         setUser(JSON.parse(value));
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.log('Error picking an image: ', error);
-  //   }
-  // };
-
-
 
 
   // const updateUserProfile = async (photoUrl) => {
@@ -388,9 +231,9 @@ export default function Profile(props) {
             <AntDesign name={"camera"} size={15} />
           </TouchableOpacity>
           <View style={Styles.HeaderProfile}>
-            {imageUri || user?.image ? (
+            {image || user?.image ? (
               <Image
-                source={{ uri: imageUri ? imageUri : `${IMAGE_URL}/${user?.image}` }}
+                source={{ uri: image ? image : `${IMAGE_URL}/${user?.image}` }}
                 style={Styles.ImageProfile}
                 resizeMode={"cover"}
               />

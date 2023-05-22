@@ -48,6 +48,12 @@
         }
       ],
       [
+        "expo-updates",
+        {
+          "username": "account-username"
+        }
+      ],
+      [
         "expo-build-properties",
         {
           "ios": {

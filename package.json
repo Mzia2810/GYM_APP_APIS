@@ -34,7 +34,7 @@
     "expo-screen-orientation": "~5.1.1",
     "expo-splash-screen": "~0.18.1",
     "expo-status-bar": "~1.4.4",
-    "expo-updates": "^0.13.4",
+    "expo-updates": "~0.16.4",
     "expo-video-player": "^2.2.0",
     "fbjs": "^3.0.4",
     "firebase": "^9.15.0",
