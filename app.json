@@ -34,7 +34,8 @@
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION",
-        "android.permission.ACCESS_NETWORK_STATE"
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "web": {
@@ -60,7 +61,6 @@
             "useFrameworks": "static"
           }
         }
-        
       ],
       [
         "expo-image-picker",
@@ -72,7 +72,9 @@
       "@config-plugins/react-native-pdf"
     ],
     "extra": {
-      
+      "eas": {
+        "projectId": "6de21280-f5c5-4cf0-b610-162db4a1300e"
+      }
     }
   }
 }
