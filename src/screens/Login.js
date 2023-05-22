@@ -15,10 +15,10 @@ import usePreferences from "../hooks/usePreferences";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { logInUser } from "../apis/ApiHandlers";
 import { useNavigation } from "@react-navigation/native";
+import * as Updates from 'expo-updates';
 
 const auth = getAuth();
 
-// const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0MmRiNDE0ZDkyNTIxNWMxNmNkZGQ3YiIsImVtYWlsIjoibWFsaWtAZ21haWwuY29tIiwiaWF0IjoxNjgwODQzMjgwLCJleHAiOjE2ODMzNjMyODB9.KU8mjFXWKKYLHYJJyR8j-3u0Z3BLgPbXOM3sKRB9wps'
 
 export default function Login(props) {
   const contextState = React.useContext(LanguageContext);
@@ -36,36 +36,62 @@ export default function Login(props) {
   console.log(password);
 
   const onChangeScreen = (screen) => {
-    props.navigation.navigate(screen);
+    reset({
+      index: 0,
+      routes: [{ name: screen }],
+    });
+    onFetchUpdateAsync()
   };
 
-  //dummy
+
   const login = async () => {
     try {
       setLoading(true)
-      await AsyncStorage.clear();
-      const res = await logInUser(email, password)
-      console.log("🚀 ~ file: Login.js:45 ~ login ~ res:", res?.success)
-      console.log("🚀 ~ file: Login.js:45 ~ login ~ res:", res?.user)
-      console.log("🚀 ~ file: Login.js:45 ~ login ~ res:", res?.user?.token)
-      await AsyncStorage.setItem("@token", res?.user?.token);
-      await AsyncStorage.setItem("@user", JSON.stringify(res?.user));
-      setEmail('')
-      setPassword('')
-      setLoading(false)
-      // props.navigation.replace('home');
-      reset({
-        index: 0,
-        routes: [{ name: 'home' }],
-      });
-      // onChangeScreen("StackNavigation");
+      if ((email, password != false)) {
+        await AsyncStorage.clear();
+        const res = await logInUser(email, password)
+        console.log("🚀 ~ file: Login.js:45 ~ login ~ res:", res?.success)
+        console.log("🚀 ~ file: Login.js:45 ~ login ~ res:", res?.user)
+        console.log("🚀 ~ file: Login.js:45 ~ login ~ res:", res?.user?.token)
+        await AsyncStorage.setItem("@token", res?.user?.token);
+        await AsyncStorage.setItem("@user", JSON.stringify(res?.user));
+        setEmail('')
+        setPassword('')
+        setLoading(false)
+        // props.navigation.replace('home');
+        reset({
+          index: 0,
+          routes: [{ name: 'home' }],
+        });
+        await Updates.fetchUpdateAsync();
+        await Updates.reloadAsync();
+
+      }
+      else {
+        Alert.alert(Strings.ST33);
+      }
+
     }
     catch (error) {
       console.log("🚀 ~ file: Login.js:53 ~ login ~ error:", error)
 
     }
-
+    setLoading(false)
   };
+  // async function onFetchUpdateAsync() {
+  //   try {
+  //     const update = await Updates.checkForUpdateAsync();
+
+  //     if (update.isAvailable) {
+  // await Updates.fetchUpdateAsync();
+  // await Updates.reloadAsync();
+  //     }
+  //   } catch (error) {
+  //     // You can also add an alert() to see the error message in case of an error when fetching updates.
+  //     console.log(`Error fetching latest Expo update: ${error}`);
+  //   }
+  // }
+
   //end
   // const login = async () => {
   //   setLoading(true);
@@ -131,6 +157,7 @@ export default function Login(props) {
         </TouchableOpacity>
         <Button
           mode="contained"
+          // disabled={loading}
           onPress={() => login()}
           dark={theme === "dark" ? false : true}
           style={Styles.AuthButton}

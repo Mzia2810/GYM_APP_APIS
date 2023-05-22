@@ -37,23 +37,26 @@ export default function Register(props) {
 
   const navigation = useNavigation();
 
-  const onChangeScreen = (screen) => {
+  const onChangeScreen = async (screen) => {
     console.log('MOVED', screen);
     props.navigation.navigate(screen);
+    // onFetchUpdateAsync();
+    await Updates.fetchUpdateAsync();
+    await Updates.reloadAsync();
   };
-  async function onFetchUpdateAsync() {
-    try {
-      const update = await Updates.checkForUpdateAsync();
+  // async function onFetchUpdateAsync() {
+  //   try {
+  //     const update = await Updates.checkForUpdateAsync();
 
-      if (update.isAvailable) {
-        await Updates.fetchUpdateAsync();
-        await Updates.reloadAsync();
-      }
-    } catch (error) {
-      // You can also add an alert() to see the error message in case of an error when fetching updates.
-      console.log(`Error fetching latest Expo update: ${error}`);
-    }
-  }
+  //     if (update.isAvailable) {
+  //       await Updates.fetchUpdateAsync();
+  //       await Updates.reloadAsync();
+  //     }
+  //   } catch (error) {
+  //     // You can also add an alert() to see the error message in case of an error when fetching updates.
+  //     console.log(`Error fetching latest Expo update: ${error}`);
+  //   }
+  // }
 
 
   const register = async () => {
@@ -78,7 +81,9 @@ export default function Register(props) {
           index: 0,
           routes: [{ name: 'home' }],
         });
-        onFetchUpdateAsync()
+        await Updates.fetchUpdateAsync();
+        await Updates.reloadAsync();
+        // onFetchUpdateAsync()
       }
 
 
